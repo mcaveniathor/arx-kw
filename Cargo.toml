@@ -1,0 +1,24 @@
+[package]
+name = "arx-kw"
+version = "0.1.0"
+authors = ["Thor McAvenia <mcaveniathor@gmail.com>"]
+edition = "2018"
+license = "MIT"
+keywords = ["cryptography", "key", "chacha", "secret", "encryption", "keywrap", "arx-kw"]
+categories = ["cryptography", "encoding", "algorithms", "authentication"]
+description = "An implementation of the ARX-KW-8-2-4 Key Wrap constructions"
+repository = "https://github.com/mcaveniathor/arx-kw"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chacha = { version = "0.3.0", features = ["nightly"] }
+siphasher = "0.3.3"
+byteorder = "1.4.2"
+arrayref = "0.3.6"
+thiserror = "1.0.23"
+
+[dev-dependencies]
+hex = "0.4.2"
+anyhow = "*"
