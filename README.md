@@ -42,7 +42,7 @@ data (as with general-purpose encryption schemes), it is vulnerable to "leakage"
 
 ## How
 
-Add `arx_kw = "0.1.0"` to your Cargo.toml
+Add `arx_kw = "0.1.1"` to your Cargo.toml dependencies section.
 
 Each public module of this crate contains a struct corresponding to one of the four specified
 ARX-KW-8-2-4 variants: ARX-8-2-4-`E`, ARX-8-2-4-`G`, ARX-8-2-4-`EX`, and ARX-8-2-4-`GX`. If you're not
