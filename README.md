@@ -1,6 +1,9 @@
 # ARX-KW
 
-![crates.io](https://img.shields.io/crates/v/arx-kw.svg)
+[![crates.io](https://img.shields.io/crates/v/arx-kw.svg)](https://crates.io/crates/arx-kw)
+[![Docs.rs](https://docs.rs/arx-kw/badge.svg)](https://docs.rs/arx-kw)
+
+---
 
 This library features Rust implementations of the ARX-KW family of novel [Key Wrap](https://wikipedia.org/wiki/Key_Wrap) constructions.
 
