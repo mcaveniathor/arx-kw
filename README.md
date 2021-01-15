@@ -87,4 +87,4 @@ Presently there are just single encrypt and decrypt benchmarks in the benches di
 
 # Tests
 
-Tests for encryption and decryption are provided for each of the four variants and use the test vectors from the original ARX-KW paper, along with a couple of doctests. They can be run using `cargo run`
+Tests for encryption and decryption are provided for each of the four variants and use the test vectors from the original ARX-KW paper, along with a couple of doctests. They can be run using `cargo test`
