@@ -83,7 +83,7 @@ assert_eq!(plaintext, p);
 
 # Benchmarks
 
-Presently there are just single encrypt and decrypt benchmarks in the benches directory. They can be run by cloning this repository and running the command `cargo test`.
+Presently there are just single encrypt and decrypt benchmarks in the benches directory. They can be run by cloning this repository and running the command `cargo bench`.
 
 # Tests
 
