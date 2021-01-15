@@ -21,4 +21,4 @@ thiserror = "1.0.23"
 
 [dev-dependencies]
 hex = "0.4.2"
-anyhow = "*"
+anyhow = "1.0"
