@@ -1,6 +1,6 @@
 [package]
 name = "arx-kw"
-version = "0.1.1"
+version = "0.1.11"
 authors = ["Thor McAvenia <mcaveniathor@gmail.com>"]
 edition = "2018"
 license = "MIT"
@@ -10,10 +10,13 @@ description = "An implementation of the ARX-KW-8-2-4 Key Wrap constructions"
 repository = "https://github.com/mcaveniathor/arx-kw"
 readme = "README.md"
 
+[features]
+nightly = ["chacha/nightly"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chacha = { version = "0.3.0", features = ["nightly"] }
+chacha = { version = "0.3.0"}
 siphasher = "0.3.3"
 byteorder = "1.4.2"
 arrayref = "0.3.6"

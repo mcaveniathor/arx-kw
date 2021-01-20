@@ -29,6 +29,14 @@ state for the nonce used by ChaCha, making the storage overhead only 50% for a 2
 
 # Use
 
+## Features
+Use the `nightly` feature to enable SIMD parallelization of the ChaCha computations (nightly Rust required):
+#### Cargo.toml
+```
+[dependencies]
+arx-kw = {version = "0.1.11", features = ["nightly"]}
+```
+
 ## When
 
 As noted above, the ARX-KW constructions are **Key Wrap** algorithms, designed and intended to

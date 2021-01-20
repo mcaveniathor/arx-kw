@@ -1,4 +1,3 @@
-#![feature(test)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
 #![allow(clippy::doc_markdown)]
