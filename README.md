@@ -64,57 +64,63 @@ sure which to use, `gx::GX` is recommended. The functionality is provided by the
 so that will need to be in scope to use the `encrypt` and `decrypt` methods.
 
 
-//! The
-//! `ConstantTimeEq` trait from the `subtle` crate is re-exported by this crate and is implemented
-//! on the `AuthTag` type as well as those covered by the blanket implementations `subtle`
-//! provides.
-//! 
-//! `Eq` and `PartialEq` are by design *not* implemented for `AuthTag` to discourage equality
-//! checking that is not O(1), but the internal `[u8;16]` is public should you want to live 
-//!
-//!
-//!
-//!
-//!
-//!>
-//!> <br><br><br><br><br>
-//!>  
-//!> Ḑ̷͉͎̺̳̭͖̗̦̪͓̂͗͒̓̅̆̋̐́̓̓̎̊͐̍̂̈͂̇͆̇͐̉̈̄̈́̈́̓̓̾͒̕͠à̸̢̛̤̠̺̩̱̤̭̪̮̙͈̱̀̍͂̋̓̓͊̈́͊̋̀̾͌͂͘͘̚n̶̡̡̢̪̼̲̫̪̯͖̟͕͚̬̠̥̫̱̮̖̼̪͚̜͙̥̬̙̪̩̮̞̰̼̲̭̏̀̀ģ̸̨̧̳̟͙͙̳̘̥͖̮̼̻͍̯̦̖͋͆̃̏͛̒̌̅͊̃̿̄̒̋͜͜͝͝ͅ ̸̧̟̼͉̳̰̥̮̙͈͖͙͎͇̙͍͚͔͒͋͋̋̒̚͠ͅͅͅè̵̡̘̲̪͔̪̥̹̟̾̅̓͛̐̐̽̅͌̊̓̔̍̓̿̊̆̂̈́͑̽̅̿̚͝͝r̵̛̭̺̠̙̞̫̗̞̪̗̹͎͌͌͌̒̏̌̅̇̉̑̂͋̅̅̀̔̉̾̋̅̏̓͘̚ờ̸̢̡̢̥̟̗̘͉̠̣͕̮͈͍͉̳̫̲̖͖̻̝̯̟͂̊̈́͑̇́͛̏͜͠u̷̎͋͂̽̉͒́̈́̑̋́̌͂̿̋̆́͜͝͝͝s̸̡̡̡̞̞͇͖̖͍̝͖̣̪͓͖̥̟͙̫̪̗͙̯̞͍̽̃̆̒̐̐̊̓̾̚̚ͅĺ̴͕͖͎̣̞͕̙̹̓͒y̷̢̠̠͇͉̘̠̩̳̲͗̑͐̿̿̐͗͊̀̽̀͐̀̿̔̈́͘͝͝
-//!> 
-//!<br><br><br><br><br>
+The
+`ConstantTimeEq` trait from the `subtle` crate is re-exported by this crate and is implemented
+on the `AuthTag` type as well as those covered by the blanket implementations `subtle`
+provides.
+
+`Eq` and `PartialEq` are by design *not* implemented for `AuthTag` to discourage equality
+checking that is not O(1), but the internal `[u8;16]` is public should you want to live 
+
+
+-
+-
+-
+- Ḑ̷͉͎̺̳̭͖̗̦̪͓̂͗͒̓̅̆̋̐́̓̓̎̊͐̍̂̈͂̇͆̇͐̉̈̄̈́̈́̓̓̾͒̕͠à̸̢̛̤̠̺̩̱̤̭̪̮̙͈̱̀̍͂̋̓̓͊̈́͊̋̀̾͌͂͘͘̚n̶̡̡̢̪̼̲̫̪̯͖̟͕͚̬̠̥̫̱̮̖̼̪͚̜͙̥̬̙̪̩̮̞̰̼̲̭̏̀̀ģ̸̨̧̳̟͙͙̳̘̥͖̮̼̻͍̯̦̖͋͆̃̏͛̒̌̅͊̃̿̄̒̋͜͜͝͝ͅ ̸̧̟̼͉̳̰̥̮̙͈͖͙͎͇̙͍͚͔͒͋͋̋̒̚͠ͅͅͅè̵̡̘̲̪͔̪̥̹̟̾̅̓͛̐̐̽̅͌̊̓̔̍̓̿̊̆̂̈́͑̽̅̿̚͝͝r̵̛̭̺̠̙̞̫̗̞̪̗̹͎͌͌͌̒̏̌̅̇̉̑̂͋̅̅̀̔̉̾̋̅̏̓͘̚ờ̸̢̡̢̥̟̗̘͉̠̣͕̮͈͍͉̳̫̲̖͖̻̝̯̟͂̊̈́͑̇́͛̏͜͠u̷̎͋͂̽̉͒́̈́̑̋́̌͂̿̋̆́͜͝͝͝s̸̡̡̡̞̞͇͖̖͍̝͖̣̪͓͖̥̟͙̫̪̗͙̯̞͍̽̃̆̒̐̐̊̓̾̚̚ͅĺ̴͕͖͎̣̞͕̙̹̓͒y̷̢̠̠͇͉̘̠̩̳̲͗̑͐̿̿̐͗͊̀̽̀͐̀̿̔̈́͘͝͝
+-
+-
 
 
 ---
-
 ```rust
-
-extern crate arx_kw;
 extern crate hex;
-use hex::FromHex;
+extern crate arx-kw;
 use arx_kw::{
-     ArxKW,
-     gx::GX
+  ArxKW,
+  gx::GX,
+  ConstantTimeEq, // From the subtle crate, allows for equality checking in constant time
+  // (impl'd for AuthTag and re-exported by this crate)
+  assert_ct_eq,
+  AuthTag
 };
 
-//!// Encrypt a key using ARX-KW-8-2-4-GX
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+  Encrypt a key using ARX-KW-8-2-4-GX
 
-// The values used here are from the test vectors in the original ARX-KW paper.
-// Inputs
-let k = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?; // The key we are using to wrap the plaintext secret key
-let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?; // The plaintext secret key we want to store/transport securely
-// Expected outputs
-let c_expected = <[u8; 32]>::from_hex("2f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?; // The ciphertext which contains the wrapped key.
-let t_expected = <[u8; 16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?; // The authentication tag
+  The values used here are from the test vectors in the original ARX-KW paper.
+  Inputs
+  k = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?; // The key we are using to wrap the plaintext secret key
+  let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?; // The plaintext secret key we want to store/transport securely
+  // Expected outputs
+  let c_expected = <[u8; 32]>::from_hex("2f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?; // The ciphertext which contains the wrapped key.
 
-let (ciphertext, authentication_tag) = GX::encrypt(&k, &p)?;
-assert_eq!(ciphertext, c_expected);
-assert_eq!(authentication_tag, t_expected);
+  The authentication tag. Note that we wrap this in AuthTag() rather than just using a [u8;16] so that we get constant time equality checking
+  let t_expected = AuthTag(<[u8; 16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?);
+  // Perform the encryption, returning the encrypted ciphertext and the authentication tag.
+  let (ciphertext, authentication_tag) = GX::encrypt(&k, &p)?;
+  assert_ct_eq!(ciphertext, &c_expected);
+  assert_ct_eq!(authentication_tag, &t_expected);
 
-// Decrypt the wrapped key
+  // Decrypt the wrapped key
 
-let plaintext = GX::decrypt(&k, &ciphertext, &authentication_tag)?;
-assert_eq!(plaintext, p);
- ```
+  let plaintext = GX::decrypt(&k, &ciphertext, &authentication_tag)?;
+  // The authentication tag is checked during decryption and will return an error if the tags do not match
+  assert_ct_eq!(plaintext, &p);
+  Ok(())
+}
+
+```
+
 
 # Benchmarks
 
