@@ -30,6 +30,8 @@ state for the nonce used by ChaCha, making the storage overhead only 50% for a 2
 
 # Use
 
+
+
 ## Features
 
 Use the `nightly` feature to enable SIMD parallelization of the ChaCha computations (nightly Rust required):
@@ -59,6 +61,27 @@ Each public module of this crate contains a struct corresponding to one of the f
 ARX-KW-8-2-4 variants: ARX-8-2-4-`E`, ARX-8-2-4-`G`, ARX-8-2-4-`EX`, and ARX-8-2-4-`GX`. If you're not
 sure which to use, `gx::GX` is recommended. The functionality is provided by the `ArxKW` trait,
 so that will need to be in scope to use the `encrypt` and `decrypt` methods.
+
+
+//! The
+//! `ConstantTimeEq` trait from the `subtle` crate is re-exported by this crate and is implemented
+//! on the `AuthTag` type as well as those covered by the blanket implementations `subtle`
+//! provides.
+//! 
+//! `Eq` and `PartialEq` are by design *not* implemented for `AuthTag` to discourage equality
+//! checking that is not O(1), but the internal `[u8;16]` is public should you want to live 
+//!
+//!
+//!
+//!
+//!
+//!>
+//!> <br><br><br><br><br>
+//!>  
+//!> Ḑ̷͉͎̺̳̭͖̗̦̪͓̂͗͒̓̅̆̋̐́̓̓̎̊͐̍̂̈͂̇͆̇͐̉̈̄̈́̈́̓̓̾͒̕͠à̸̢̛̤̠̺̩̱̤̭̪̮̙͈̱̀̍͂̋̓̓͊̈́͊̋̀̾͌͂͘͘̚n̶̡̡̢̪̼̲̫̪̯͖̟͕͚̬̠̥̫̱̮̖̼̪͚̜͙̥̬̙̪̩̮̞̰̼̲̭̏̀̀ģ̸̨̧̳̟͙͙̳̘̥͖̮̼̻͍̯̦̖͋͆̃̏͛̒̌̅͊̃̿̄̒̋͜͜͝͝ͅ ̸̧̟̼͉̳̰̥̮̙͈͖͙͎͇̙͍͚͔͒͋͋̋̒̚͠ͅͅͅè̵̡̘̲̪͔̪̥̹̟̾̅̓͛̐̐̽̅͌̊̓̔̍̓̿̊̆̂̈́͑̽̅̿̚͝͝r̵̛̭̺̠̙̞̫̗̞̪̗̹͎͌͌͌̒̏̌̅̇̉̑̂͋̅̅̀̔̉̾̋̅̏̓͘̚ờ̸̢̡̢̥̟̗̘͉̠̣͕̮͈͍͉̳̫̲̖͖̻̝̯̟͂̊̈́͑̇́͛̏͜͠u̷̎͋͂̽̉͒́̈́̑̋́̌͂̿̋̆́͜͝͝͝s̸̡̡̡̞̞͇͖̖͍̝͖̣̪͓͖̥̟͙̫̪̗͙̯̞͍̽̃̆̒̐̐̊̓̾̚̚ͅĺ̴͕͖͎̣̞͕̙̹̓͒y̷̢̠̠͇͉̘̠̩̳̲͗̑͐̿̿̐͗͊̀̽̀͐̀̿̔̈́͘͝͝
+//!> 
+//!<br><br><br><br><br>
+
 
 ---
 

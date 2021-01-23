@@ -39,7 +39,21 @@
 //! 
 //! If used to store secret key material (by nature high entropy), this is not an issue as an attacker gains no information about the key encapsulated within. 
 //!
+
+//! ## Features
+
+//! Use the `nightly` feature to enable SIMD parallelization of the ChaCha computations (nightly Rust required):
+//! #### Cargo.toml
+
+//! ```toml
+//! [dependencies]
+//! arx-kw = {version = "0.1.11", features = ["nightly"]}
+//! ```
+
+//! 
 //! ## How
+//!
+//!
 //! 
 //! Each public module of this crate contains a struct corresponding to one of the four specified
 //! ARX-KW-8-2-4 variants: ARX-8-2-4-`E`, ARX-8-2-4-`G`, ARX-8-2-4-`EX`, and ARX-8-2-4-`GX`. If you're not
@@ -125,7 +139,6 @@ pub mod e;
 pub mod g;
 pub mod ex;
 pub mod gx;
-extern crate hex;
 pub use subtle::{ConstantTimeEq,Choice};
 
 #[derive(Error,Debug)]
