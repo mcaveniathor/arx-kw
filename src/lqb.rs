@@ -21,7 +21,7 @@ pub struct ChaChaLQB {
 fn _chacha8_encrypt_mut(key: &[u8;32], lqb: &[u8;16], mut msg: &mut [u8]) -> Result<(),ArxKwError> {
     let (counter, nonce) = array_refs![lqb, 8,8]; // Array reference equivalent of (&lqb[..8], &lqb[8..16])
     let mut stream = new_chacha8_with_counter(key, *counter, *nonce);
-    stream.xor_read(&mut msg).map_err(|_| ArxKwError::ChaChaError("".to_string()))
+    stream.xor_read(&mut msg).map_err(|e| ArxKwError::ChaChaError(format!("Reached end of chacha stream: {:?} ",e)))
 }
 
 /// Instantiates a ChaCha stream with the given key and lower quarter block (LQB) initialized to the 128-bit value
@@ -31,7 +31,7 @@ pub fn chacha8_encrypt(key: &[u8;32], lqb: &[u8;16], msg: &[u8]) -> Result<Vec<u
     let mut tmp = msg.to_vec();
     let (counter, nonce) = array_refs![lqb, 8,8]; // Array reference equivalent of (&lqb[..8], &lqb[8..16])
     let mut stream = new_chacha8_with_counter(key, *counter, *nonce);
-    stream.xor_read(&mut tmp).map_err(|_| ArxKwError::ChaChaError("".to_string()))?;
+    stream.xor_read(&mut tmp).map_err(|e| ArxKwError::ChaChaError(format!("Reached end of ChaCha stream: {:?} ",e)))?;
     Ok(tmp)
 }
 
