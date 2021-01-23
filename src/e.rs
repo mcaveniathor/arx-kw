@@ -1,4 +1,12 @@
-use crate::{util,AuthTag,lqb,ArxKW,ArxKwError,InvalidLengthError};
+use crate::{
+    util,
+    AuthTag,
+    lqb,
+    ArxKW,
+    ArxKwError,
+    InvalidLengthError,
+    ConstantTimeEq
+};
 
 pub struct E;
 impl E {
@@ -31,7 +39,7 @@ impl ArxKW for E {
         } else {
             let (k1,k2) = array_refs![key,16,32];
             let authentication_tag = util::sip_array_keyed(k1, plaintext);
-            let ciphertext = lqb::chacha8_encrypt(k2, &authentication_tag, plaintext)?;
+            let ciphertext = lqb::chacha8_encrypt(k2, authentication_tag.as_ref(), plaintext)?;
             Ok((ciphertext, authentication_tag))
         }
     }
@@ -41,9 +49,9 @@ impl ArxKW for E {
             Err(ArxKwError::InvalidLength(InvalidLengthError::UpTo(ciphertext.len(), 48_usize)))
         } else {
             let (k1,k2) = array_refs![key,16,32];
-            let p_prime = lqb::chacha8_encrypt(k2, authentication_tag, ciphertext)?;
+            let p_prime = lqb::chacha8_encrypt(k2, authentication_tag.as_ref(), ciphertext)?;
             let t_prime = util::sip_array_keyed(k1, &p_prime);
-            if &t_prime == authentication_tag {
+            if bool::from(t_prime.ct_eq(authentication_tag)) { // Compare AuthTags in constant time
                 Ok(p_prime)
             }
             else {
@@ -89,6 +97,7 @@ mod tests {
     use anyhow::Result;
     use hex::FromHex;
     use super::{ArxKW,E};
+    use crate::{ConstantTimeEq,assert_ct_eq,AuthTag};
     
 
     /*
@@ -99,11 +108,11 @@ mod tests {
     fn test_encrypt() -> Result<()> {
         let k = <[u8; 48]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f")?;
         let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
-        let t_expected = <[u8; 16]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?;
+        let t_expected = AuthTag(<[u8; 16]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?);
         let c_expected = <[u8; 32]>::from_hex("e6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1")?;
         let (c,t) = E::encrypt(&k, &p)?;
         assert_eq!(&c, &c_expected);
-        assert_eq!(&t, &t_expected);
+        assert_ct_eq!(t, &t_expected);
         Ok(())
     }
     #[test]
@@ -111,7 +120,7 @@ mod tests {
 
         let c = <[u8; 32]>::from_hex("e6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1")?;
         let k = <[u8; 48]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f")?;
-        let t = <[u8; 16]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?;
+        let t = AuthTag(<[u8; 16]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?);
         let p_expected = <[u8;32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
         let p = E::decrypt(&k, &c, &t)?;
         assert_eq!(p, p_expected);

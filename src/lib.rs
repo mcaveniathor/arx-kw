@@ -44,7 +44,24 @@
 //! Each public module of this crate contains a struct corresponding to one of the four specified
 //! ARX-KW-8-2-4 variants: ARX-8-2-4-`E`, ARX-8-2-4-`G`, ARX-8-2-4-`EX`, and ARX-8-2-4-`GX`. If you're not
 //! sure which to use, `gx::GX` is recommended. The functionality is provided by the `ArxKW` trait,
-//! so that will need to be in scope to use the `encrypt` and `decrypt` methods.
+//! so that will need to be in scope to use the `encrypt` and `decrypt` methods. The
+//! `ConstantTimeEq` trait from the `subtle` crate is re-exported by this crate and is implemented
+//! on the `AuthTag` type as well as those covered by the blanket implementations `subtle`
+//! provides.
+//! 
+//! `Eq` and `PartialEq` are by design *not* implemented for `AuthTag` to discourage equality
+//! checking that is not O(1), but the internal `[u8;16]` is public should you want to live 
+//!
+//!
+//!
+//!
+//!
+//!>
+//!> <br><br><br><br><br>
+//!>  
+//!> Ḑ̷͉͎̺̳̭͖̗̦̪͓̂͗͒̓̅̆̋̐́̓̓̎̊͐̍̂̈͂̇͆̇͐̉̈̄̈́̈́̓̓̾͒̕͠à̸̢̛̤̠̺̩̱̤̭̪̮̙͈̱̀̍͂̋̓̓͊̈́͊̋̀̾͌͂͘͘̚n̶̡̡̢̪̼̲̫̪̯͖̟͕͚̬̠̥̫̱̮̖̼̪͚̜͙̥̬̙̪̩̮̞̰̼̲̭̏̀̀ģ̸̨̧̳̟͙͙̳̘̥͖̮̼̻͍̯̦̖͋͆̃̏͛̒̌̅͊̃̿̄̒̋͜͜͝͝ͅ ̸̧̟̼͉̳̰̥̮̙͈͖͙͎͇̙͍͚͔͒͋͋̋̒̚͠ͅͅͅè̵̡̘̲̪͔̪̥̹̟̾̅̓͛̐̐̽̅͌̊̓̔̍̓̿̊̆̂̈́͑̽̅̿̚͝͝r̵̛̭̺̠̙̞̫̗̞̪̗̹͎͌͌͌̒̏̌̅̇̉̑̂͋̅̅̀̔̉̾̋̅̏̓͘̚ờ̸̢̡̢̥̟̗̘͉̠̣͕̮͈͍͉̳̫̲̖͖̻̝̯̟͂̊̈́͑̇́͛̏͜͠u̷̎͋͂̽̉͒́̈́̑̋́̌͂̿̋̆́͜͝͝͝s̸̡̡̡̞̞͇͖̖͍̝͖̣̪͓͖̥̟͙̫̪̗͙̯̞͍̽̃̆̒̐̐̊̓̾̚̚ͅĺ̴͕͖͎̣̞͕̙̹̓͒y̷̢̠̠͇͉̘̠̩̳̲͗̑͐̿̿̐͗͊̀̽̀͐̀̿̔̈́͘͝͝
+//!> 
+//!<br><br><br><br><br>
 //!
 //! ---
 //!
@@ -58,7 +75,11 @@
 //!
 //! use arx_kw::{
 //!     ArxKW,
-//!     gx::GX
+//!     gx::GX,
+//!     ConstantTimeEq, // From the subtle crate, allows for equality checking in constant time
+//!                     // (impl'd for AuthTag and re-exported by this crate)
+//!     assert_ct_eq,
+//!     AuthTag
 //! };
 //!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -70,16 +91,19 @@
 //! let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?; // The plaintext secret key we want to store/transport securely
 //! // Expected outputs
 //! let c_expected = <[u8; 32]>::from_hex("2f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?; // The ciphertext which contains the wrapped key.
-//! let t_expected = <[u8; 16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?; // The authentication tag
 //!
+//!// The authentication tag. Note that we wrap this in AuthTag() rather than just using a [u8;16] so that we get constant time equality checking
+//! let t_expected = AuthTag(<[u8; 16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?);
+//! // Perform the encryption, returning the encrypted ciphertext and the authentication tag.
 //! let (ciphertext, authentication_tag) = GX::encrypt(&k, &p)?;
-//! assert_eq!(ciphertext, c_expected);
-//! assert_eq!(authentication_tag, t_expected);
+//! assert_ct_eq!(ciphertext, &c_expected);
+//! assert_ct_eq!(authentication_tag, &t_expected);
 //!
 //! // Decrypt the wrapped key
 //!
 //! let plaintext = GX::decrypt(&k, &ciphertext, &authentication_tag)?;
-//! assert_eq!(plaintext, p);
+//! // The authentication tag is checked during decryption and will return an error if the tags do not match
+//! assert_ct_eq!(plaintext, &p);
 //! # Ok(())
 //! # }
 //! ```
@@ -87,7 +111,7 @@
 //!
 //!
 //!
-
+extern crate subtle;
 extern crate chacha;
 extern crate siphasher;
 extern crate byteorder;
@@ -101,6 +125,8 @@ pub mod e;
 pub mod g;
 pub mod ex;
 pub mod gx;
+extern crate hex;
+pub use subtle::{ConstantTimeEq,Choice};
 
 #[derive(Error,Debug)]
 pub enum InvalidLengthError {
@@ -118,10 +144,42 @@ pub enum ArxKwError {
     #[error("Authentication tag does not match {0:x?} (Expected {1:x?})")]
     BadTags(AuthTag,AuthTag)
 }
+
 /// The type used as the authentication tag (unencrypted data to be stored alongside encrypted keys) 
 /// This is the same for all variants at time of writing (a single, static 128 bits), making
 /// for a 50% storage overhead for a 256-bit key like those used for `ChaCha`
-pub type AuthTag = [u8; 16];
+///
+/// The `subtle::ConstantTimeEq` trait is implemented (and re-exported by this crate) for constant
+/// time equality checking of `AuthTag`s
+#[derive(Debug,Clone,Copy,)]
+pub struct AuthTag(pub [u8; 16]);
+impl std::convert::AsRef<[u8;16]> for AuthTag {
+    fn as_ref(&self) -> &[u8;16] {
+        &self.0
+    }
+}
+
+impl ConstantTimeEq for AuthTag {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        println!("peepee");
+        self.0.ct_eq(&other.0)
+    }
+}
+/// Macro which provides an equivalent of `assert_eq` in constant time using the `ConstantTimeEq`
+/// trait. Accordingly, ConstantTimeEq must be in scope and implemented on the types of $x and $y
+/// for this to work. It is implemented for `AuthTag`
+#[macro_export]
+macro_rules! assert_ct_eq {
+    ($x:expr, $y:expr) => {
+        if bool::from($x.ct_eq($y)) {
+        }
+        else {
+            panic!("")
+        }
+
+    }
+
+}
 
 
 /// Provides encryption and decryption capabilites

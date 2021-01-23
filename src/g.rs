@@ -1,4 +1,13 @@
-use crate::{generate,util,lqb,ArxKW,ArxKwError,InvalidLengthError,AuthTag};
+use crate::{
+    generate,
+    util,
+    lqb,
+    ArxKW,
+    ArxKwError,
+    InvalidLengthError,
+    AuthTag,
+    ConstantTimeEq
+};
 
 pub struct G;
 impl G {
@@ -31,7 +40,7 @@ impl ArxKW for G {
         } else {
             let (k1,k2) = generate::subkeys(key)?;
             let authentication_tag = util::sip_array_keyed(&k1, plaintext);
-            let ciphertext = lqb::chacha8_encrypt(&k2, &authentication_tag, plaintext)?;
+            let ciphertext = lqb::chacha8_encrypt(&k2, authentication_tag.as_ref(), plaintext)?;
             Ok((ciphertext, authentication_tag))
         }
     }
@@ -42,9 +51,9 @@ impl ArxKW for G {
             Err(ArxKwError::InvalidLength(InvalidLengthError::UpTo(ciphertext.len(), 64)))
         } else {
             let (k1,k2) = generate::subkeys(key)?;
-            let p_prime = lqb::chacha8_encrypt(&k2, authentication_tag, ciphertext)?;
+            let p_prime = lqb::chacha8_encrypt(&k2, authentication_tag.as_ref(), ciphertext)?;
             let t_prime = util::sip_array_keyed(&k1, &p_prime);
-            if &t_prime == authentication_tag {
+            if bool::from(t_prime.ct_eq(authentication_tag)) {
                 Ok(p_prime)
             }
             else {
@@ -60,16 +69,17 @@ mod tests {
     use hex::FromHex;
     use anyhow::Result;
     use super::{G,ArxKW};
+    use crate::{AuthTag,assert_ct_eq,ConstantTimeEq};
 
     #[test]
     fn test_encrypt() -> Result<()> {
         let k = <[u8;32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
         let p = <[u8;32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
-        let t_expected = <[u8;16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?;
+        let t_expected = AuthTag(<[u8;16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?);
         let c_expected = <[u8;32]>::from_hex("f63830f5148a039b6aacc4b9b6bc281d7704d906e4b5d91e045a62cdfc25eb10")?;
         let (c,t) = G::encrypt(&k,&p)?;
-        assert_eq!(c, c_expected);
-        assert_eq!(t, t_expected);
+        assert_ct_eq!(c, &c_expected);
+        assert_ct_eq!(t, &t_expected);
         Ok(())
     }
 
@@ -77,7 +87,7 @@ mod tests {
     fn test_decrypt() -> Result<()> {
         let k = <[u8;32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
         let p_expected = <[u8;32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
-        let t_expected = <[u8;16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?;
+        let t_expected = AuthTag(<[u8;16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?);
         let c = <[u8;32]>::from_hex("f63830f5148a039b6aacc4b9b6bc281d7704d906e4b5d91e045a62cdfc25eb10")?;
         let p = G::decrypt(&k,&c,&t_expected)?;
         assert_eq!(p, p_expected);

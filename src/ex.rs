@@ -1,5 +1,5 @@
 use chacha::KeyStream;
-use crate::{util,ArxKW,ArxKwError,AuthTag};
+use crate::{util,ArxKW,ArxKwError,AuthTag,ConstantTimeEq};
 
 /// A user-friendly implementation of ARX-KW-8-2-4-EX
 pub struct EX {}
@@ -29,7 +29,7 @@ impl ArxKW for EX {
         let mut stream = util::xchacha8::new(k2,&nonce);
         stream.xor_read(&mut p_prime).map_err(|_| ArxKwError::ChaChaError("X".to_string()))?;
         let t_prime = util::sip_array_keyed(k1, &p_prime);
-        if &t_prime == authentication_tag {
+        if bool::from(t_prime.ct_eq(authentication_tag)) {
             Ok(p_prime)
         }
         else {
@@ -64,9 +64,9 @@ const NONCE_INIT_EX: [u8;24] = [0x61, 0x72, 0x62, 0x69, 0x74, 0x72, 0x45, 0x58,0
 /// ```
 /// # use arx_kw::ex::construct_nonce;
 /// # use arx_kw::AuthTag;
-/// let mut t = AuthTag::from([0u8; 16]);
+/// let mut t = AuthTag([0u8; 16]);
 /// for i in (0u8..16u8) {
-///     t[i as usize] = i;
+///     t.0[i as usize] = i;
 /// }
 ///
 /// let nonce = construct_nonce(&t);
@@ -78,15 +78,19 @@ const NONCE_INIT_EX: [u8;24] = [0x61, 0x72, 0x62, 0x69, 0x74, 0x72, 0x45, 0x58,0
 /// ```
 ///  extern crate hex;
 /// # extern crate anyhow;
-///  use hex::FromHex;
-/// # use arx_kw::ex::construct_nonce;
-/// # use arx_kw::AuthTag;
+/// use hex::FromHex;
+/// use arx_kw::{
+///     ex::construct_nonce,
+///     AuthTag,
+///     ConstantTimeEq,
+///     assert_ct_eq
+/// };
 ///
 /// # fn main() -> anyhow::Result<()> {
-/// let authentication_tag = AuthTag::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?;
+/// let authentication_tag = AuthTag(<[u8;16]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?);
 /// let nonce_expected = <[u8;24]>::from_hex("6172626974724558c4f21d3b4dbcc566c3a73bbc59790f2f")?;
 /// let nonce = construct_nonce(&authentication_tag);
-/// assert_eq!(nonce,nonce_expected);
+/// assert_ct_eq!(nonce, &nonce_expected);
 /// Ok(())
 /// # }
 /// ```
@@ -96,7 +100,7 @@ pub fn construct_nonce(authentication_tag: &AuthTag) -> [u8;24] {
     // Initialize nonce with the defined prefix followed by 16 zeros.
     let mut nonce = NONCE_INIT_EX;
     // Copy the contents of t into bytes 15 to 23 of nonce
-    nonce[8..24].clone_from_slice(&authentication_tag[..]);
+    nonce[8..24].clone_from_slice(authentication_tag.as_ref());
     nonce
 }
 
@@ -107,16 +111,17 @@ mod tests {
     use super::*;
     use anyhow::Result;
     use hex::FromHex;
+    use crate::{assert_ct_eq,ConstantTimeEq};
 
     #[test]
     fn test_encrypt() -> Result<()> {
         let k = <[u8; 48]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f")?;
         let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
-        let t_expected = <[u8; 16]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?;
+        let t_expected = AuthTag(<[u8; 16]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?);
         let c_expected = <[u8; 32]>::from_hex("02a55ab1d7f549db160e8ecb33e1c6d65a05d0ebaba54dc0712285787c8a62db")?;
         let (c,t) = EX::encrypt(array_ref![k,0,48], &p)?;
         assert_eq!(&c.to_vec(), &c_expected);
-        assert_eq!(&t.to_vec(), &t_expected);
+        assert_ct_eq!(&t, &t_expected);
         Ok(())
     }
 
@@ -124,12 +129,10 @@ mod tests {
     fn test_decrypt() -> Result<()> {
         let k = <[u8; 48]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f")?;
         let p_expected = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
-        let t = <[u8; 16]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?;
+        let t = AuthTag(<[u8; 16]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?);
         let c = <[u8; 32]>::from_hex("02a55ab1d7f549db160e8ecb33e1c6d65a05d0ebaba54dc0712285787c8a62db")?;
         let p = EX::decrypt(&k, &c, &t)?;
         assert_eq!(p, p_expected);
         Ok(())
     }
-
-   
 }

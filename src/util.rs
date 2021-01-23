@@ -11,7 +11,7 @@ pub fn sip_array_keyed(key: &[u8; 16], msg: &[u8]) -> AuthTag {
     let (sip1, sip2) = (u64::from_le_bytes(*sip1_bytes), u64::from_le_bytes(*sip2_bytes));
     let mut sip_hasher = SipHasher24::new_with_keys(sip1,sip2);
     sip_hasher.write(msg);
-    sip_hasher.finish128().as_bytes()
+    AuthTag(sip_hasher.finish128().as_bytes())
 }
 
 /// Contains utilities shared by the EX and GX variants of ARX-KW
