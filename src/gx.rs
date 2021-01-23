@@ -19,7 +19,7 @@ impl ArxKW for GX {
         let nonce = construct_nonce(&authentication_tag);
         let mut stream = util::xchacha8::new(&k2,&nonce);
         let mut ciphertext = plaintext.to_vec();
-        stream.xor_read(&mut ciphertext).map_err(|_| ArxKwError::ChaChaError("X".to_string()))?;
+        stream.xor_read(&mut ciphertext).map_err(|e| ArxKwError::ChaChaError(format!("{:?}: X",e)))?;
         Ok((ciphertext,authentication_tag))
     }
     fn decrypt(key: &Self::Key, ciphertext: &[u8], authentication_tag: &AuthTag) -> Result<Vec<u8>, ArxKwError> {
@@ -27,7 +27,7 @@ impl ArxKW for GX {
         let nonce = construct_nonce(authentication_tag);
         let mut stream = util::xchacha8::new(&k2, &nonce);
         let mut p_prime = ciphertext.to_vec();
-        stream.xor_read(&mut p_prime).map_err(|_| ArxKwError::ChaChaError("X".to_string()))?;
+        stream.xor_read(&mut p_prime).map_err(|e| ArxKwError::ChaChaError(format!("{:?}: X",e)))?;
         let t_prime = util::sip_array_keyed(&k1, &p_prime);
         if bool::from(t_prime.ct_eq(authentication_tag)) { // Equality check is done in constant time
             Ok(p_prime)
