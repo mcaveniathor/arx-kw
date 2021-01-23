@@ -8,3 +8,19 @@ jobs:
     - rust: nightly
   fast_finish: true
 cache: cargo
+
+language: rust
+rust:
+ - stable
+ - beta
+ - nightly
+
+cache: cargo # cache cargo-audit once installed
+before_script:
+  - cargo install --force cargo-audit
+  - cargo install -- force clippy
+  - cargo generate-lockfile
+script:
+  - cargo audit
+  - cargo clippy
+  - cargo test
