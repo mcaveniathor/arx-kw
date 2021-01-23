@@ -20,7 +20,7 @@ const ZERO_32: [u8;8] = [0_u8;8];
 pub fn subkeys(k: &[u8;32]) -> Result<([u8;16], [u8;32]), ArxKwError> {
     let mut stream = lqb::new_chacha8_with_counter(k, ZERO_32, ZERO_32);
     let mut g: [u8;48] = ZERO_384;
-    stream.xor_read(&mut g).map_err(|_| ArxKwError::ChaChaError("".to_string()))?;
+    stream.xor_read(&mut g).map_err(|e| ArxKwError::ChaChaError(format!("Reached end of chacha stream: {:?} ",e)))?;
     let (k1,k2) = array_refs![&g,16,32];
     Ok((*k1,*k2))
 }
