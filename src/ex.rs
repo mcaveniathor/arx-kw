@@ -18,7 +18,7 @@ impl ArxKW for EX {
         let nonce = construct_nonce(&authentication_tag);
         let mut stream = util::xchacha8::new(k2,&nonce);
         let mut ciphertext = plaintext.to_vec();
-        stream.xor_read(&mut ciphertext).map_err(|_| ArxKwError::ChaChaError("X".to_string()))?;
+        stream.xor_read(&mut ciphertext).map_err(|e| ArxKwError::ChaChaError(format!("Reached end of stream: {:?} X",e)))?;
         Ok((ciphertext,authentication_tag))
     }
 
@@ -27,7 +27,7 @@ impl ArxKW for EX {
         let nonce = construct_nonce(authentication_tag);
         let mut p_prime = ciphertext.to_vec();
         let mut stream = util::xchacha8::new(k2,&nonce);
-        stream.xor_read(&mut p_prime).map_err(|_| ArxKwError::ChaChaError("X".to_string()))?;
+        stream.xor_read(&mut p_prime).map_err(|e| ArxKwError::ChaChaError(format!("Reached end of stream: {:?} X",e)))?;
         let t_prime = util::sip_array_keyed(k1, &p_prime);
         if bool::from(t_prime.ct_eq(authentication_tag)) {
             Ok(p_prime)
