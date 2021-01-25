@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["construct_nonce","Concatenates an authentication tag to the GX prefix defined for ARX-KW-8-2-4-GX and returns the resulting intermediate nonce"]],"struct":[["GX","The ARX-8-2-4-GX variant. Has a key length of 32 bytes and no maximum input length.  See the `ArxKW` trait for usage."]]});
