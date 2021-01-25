@@ -1,0 +1,3 @@
+criterion_home = "./pages/criterion"
+plotting_backend = "auto"
+output_format = "criterion"

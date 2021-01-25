@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["construct_nonce","Concatenates an authentication tag to the EX prefix and returns the resulting intermediate nonce"]],"struct":[["EX","A user-friendly implementation of ARX-KW-8-2-4-EX. Has a key length of 48 bytes and no maximum input length. See the `ArxKW` trait for usage."]]});
