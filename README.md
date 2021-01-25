@@ -4,6 +4,7 @@
 [![Docs.rs](https://docs.rs/arx-kw/badge.svg)](https://docs.rs/arx-kw)
 [![Build Status](https://www.travis-ci.com/mcaveniathor/arx-kw.svg?branch=main)](https://www.travis-ci.com/mcaveniathor/arx-kw)
 [![Rust Report Card](https://rust-reportcard.xuri.me/badge/github.com/mcaveniathor/arx-kw)](https://rust-reportcard.xuri.me/report/github.com/mcaveniathor/arx-kw)
+[![dependency status](https://deps.rs/crate/arx-kw/0.2.12/status.svg)](https://deps.rs/crate/arx-kw/0.2.12)
 
 ---
 
