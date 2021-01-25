@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["G","The ARX-8-2-4-G variant. Has a key length of 32 bytes and a maximum input length of 64 bytes. See the `ArxKW` trait for usage."]]});

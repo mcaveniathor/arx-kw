@@ -128,6 +128,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 The benches directory contains encrypt and decrypt benchmarks for each ARX-KW variant. This crate uses the `criterion` crate
 for benchmarking, so the benchmarks can be run on stable or nightly Rust and offer more detailed output.
 
+---
+
+## My Benchmarks
+
+Conducted using the `criterion` crate on my machine using the `nightly` feature with a Ryzen 1700 @ 3.8 GHz and 8GB of RAM at 3000MHz. 
+ - [Benchmarks](https://mcaveniathor.github.io/arx-kw/criterion/reports/index.html)
+
 #### To run benchmarks without SIMD:
 
 `cargo bench`
@@ -142,3 +149,8 @@ f you run the benchmarks without the nightly feature and then with it, the outpu
 # Tests
 
 Tests for encryption and decryption are provided for each of the four variants and use the test vectors from the original ARX-KW paper, along with a couple of doctests. They can be run using `cargo test`
+
+# Documentation
+
+- [docs.rs](https://docs.rs/arx-kw)
+- [Main Branchj](https://mcaveniathor.github.io/arx-kw/doc/arx_kw/index.html)
