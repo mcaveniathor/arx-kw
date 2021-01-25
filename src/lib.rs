@@ -183,6 +183,7 @@ pub enum ArxKwError {
 #[derive(Debug,Clone,Copy,)]
 pub struct AuthTag(pub [u8; 16]);
 impl std::convert::AsRef<[u8;16]> for AuthTag {
+    #[cfg(not(tarpaulin_include))]
     fn as_ref(&self) -> &[u8;16] {
         &self.0
     }

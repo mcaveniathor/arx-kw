@@ -7,6 +7,7 @@ use crate::{util,ArxKW,ArxKwError,AuthTag,ConstantTimeEq};
 pub struct EX {}
 impl EX {
     /// The length in bytes of the secret key used by this variant of ARX-KW
+    #[cfg(not(tarpaulin_include))]
     #[must_use] pub const fn key_length() -> usize {
         48
     }
@@ -32,11 +33,9 @@ impl ArxKW for EX {
         stream.xor_read(&mut p_prime).map_err(|e| ArxKwError::ChaChaError(format!("Reached end of stream: {:?} X",e)))?;
         let t_prime = util::sip_array_keyed(k1, &p_prime);
         if bool::from(t_prime.ct_eq(authentication_tag)) {
-            Ok(p_prime)
+            return Ok(p_prime);
         }
-        else {
-            Err(ArxKwError::BadTags(t_prime, *authentication_tag))
-        }
+        Err(ArxKwError::BadTags(t_prime, *authentication_tag))
     }
 }
 
@@ -98,6 +97,7 @@ const NONCE_INIT_EX: [u8;24] = [0x61, 0x72, 0x62, 0x69, 0x74, 0x72, 0x45, 0x58,0
 /// ```
 #[must_use]
 #[inline]
+#[cfg(not(tarpaulin_include))]
 pub fn construct_nonce(authentication_tag: &AuthTag) -> [u8;24] {
     // Initialize nonce with the defined prefix followed by 16 zeros.
     let mut nonce = NONCE_INIT_EX;
@@ -135,6 +135,17 @@ mod tests {
         let c = <[u8; 32]>::from_hex("02a55ab1d7f549db160e8ecb33e1c6d65a05d0ebaba54dc0712285787c8a62db")?;
         let p = EX::decrypt(&k, &c, &t)?;
         assert_eq!(p, p_expected);
+        Ok(())
+    }
+
+    #[test]
+    /// Make sure that a bad authentication tag yields an error when decrypting
+    fn test_bad_decrypt() -> Result<()> {
+        let k = <[u8; 48]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f")?;
+        let t_bad = AuthTag(<[u8; 16]>::from_hex("aaf21d3b4dbcc566c3a73bbc59790f2f")?); // first two hex digits should be c4
+        let c = <[u8; 32]>::from_hex("02a55ab1d7f549db160e8ecb33e1c6d65a05d0ebaba54dc0712285787c8a62db")?;
+        let res = EX::decrypt(&k, &c, &t_bad);
+        assert!(res.is_err());
         Ok(())
     }
 }
