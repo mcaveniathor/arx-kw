@@ -5,6 +5,7 @@
 [![Build Status](https://www.travis-ci.com/mcaveniathor/arx-kw.svg?branch=main)](https://www.travis-ci.com/mcaveniathor/arx-kw)
 [![Rust Report Card](https://rust-reportcard.xuri.me/badge/github.com/mcaveniathor/arx-kw)](https://rust-reportcard.xuri.me/report/github.com/mcaveniathor/arx-kw)
 [![dependency status](https://deps.rs/crate/arx-kw/0.2.12/status.svg)](https://deps.rs/crate/arx-kw/0.2.12)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 
 ---
 
@@ -32,8 +33,6 @@ state for the nonce used by ChaCha, making the storage overhead only 50% for a 2
 
 # Use
 
-
-
 ## Features
 
 Use the `nightly` feature to enable SIMD parallelization of the ChaCha computations (nightly Rust required):
@@ -43,6 +42,8 @@ Use the `nightly` feature to enable SIMD parallelization of the ChaCha computati
 [dependencies]
 arx-kw = {version = "0.2", features = ["nightly"]}
 ```
+
+---
 
 ## When
 
@@ -54,6 +55,8 @@ will always yield the same ciphertext output for a given input; if used to encry
 data (as with general-purpose encryption schemes), it is vulnerable to "leakage", described here:
 
 > Deterministic encryption can leak information to an eavesdropper, who may recognize known ciphertexts. For example, when an adversary learns that a given ciphertext corresponds to some interesting message, they can learn something every time that ciphertext is transmitted. To gain information about the meaning of various ciphertexts, an adversary might perform a statistical analysis of messages transmitted over an encrypted channel, or attempt to correlate ciphertexts with observed actions (e.g., noting that a given ciphertext is always received immediately before a submarine dive). If used to store secret key material (by nature high entropy), this is not an issue as an attacker gains no information about the key encapsulated within. 
+
+---
 
 ## How
 
@@ -84,8 +87,10 @@ checking that is not O(1), but the internal `[u8;16]` is public should you want 
 
 
 ---
+
 ```rust
 extern crate hex;
+use hex::FromHex;
 extern crate arx-kw;
 use arx_kw::{
   ArxKW,
@@ -97,32 +102,45 @@ use arx_kw::{
 };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-  Encrypt a key using ARX-KW-8-2-4-GX
 
-  The values used here are from the test vectors in the original ARX-KW paper.
-  Inputs
-  k = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?; // The key we are using to wrap the plaintext secret key
-  let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?; // The plaintext secret key we want to store/transport securely
-  // Expected outputs
-  let c_expected = <[u8; 32]>::from_hex("2f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?; // The ciphertext which contains the wrapped key.
+  // The values used here are from the test vectors in the original ARX-KW paper.
 
-  The authentication tag. Note that we wrap this in AuthTag() rather than just using a [u8;16] so that we get constant time equality checking
+  /* 
+   * Inputs
+   */
+  // The key we are using to wrap the plaintext secret key
+  k = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
+  // The plaintext secret key we want to store/transport securely
+  let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+
+  /*
+   * Expected Outputs
+   */
+  // The ciphertext which contains the wrapped key.
+  let c_expected = <[u8; 32]>::from_hex("2f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?; 
+  // The authentication tag. Note that we wrap this in AuthTag() rather than just using a [u8;16] so that we get constant time equality checking
   let t_expected = AuthTag(<[u8; 16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?);
-  // Perform the encryption, returning the encrypted ciphertext and the authentication tag.
+
+
+  // Perform the encryption using the GX variant, returning the encrypted ciphertext and the authentication tag.
   let (ciphertext, authentication_tag) = GX::encrypt(&k, &p)?;
+
+  // Verify that output matches expected
   assert_ct_eq!(ciphertext, &c_expected);
   assert_ct_eq!(authentication_tag, &t_expected);
 
   // Decrypt the wrapped key
-
   let plaintext = GX::decrypt(&k, &ciphertext, &authentication_tag)?;
   // The authentication tag is checked during decryption and will return an error if the tags do not match
+
+  // Verify that the decrypted plaintext matches our original input
   assert_ct_eq!(plaintext, &p);
   Ok(())
 }
 
 ```
 
+---
 
 # Benchmarks
 
@@ -136,6 +154,7 @@ for benchmarking, so the benchmarks can be run on stable or nightly Rust and off
 Conducted using the `criterion` crate on my machine using the `nightly` feature with a Ryzen 1700 @ 3.8 GHz and 8GB of RAM at 3000MHz. 
  - [Benchmarks](https://mcaveniathor.github.io/arx-kw/criterion/reports/index.html)
 
+---
 
 ## Prefer to run your own?
 
@@ -149,14 +168,18 @@ Conducted using the `criterion` crate on my machine using the `nightly` feature 
 
 If you run the benchmarks without the nightly feature and then with it, the output will show you the change in execution time, for those curious.
 
+---
 
 # Tests
 
 Tests for encryption and decryption are provided for each of the four variants and use the test vectors from the original ARX-KW paper, along with a couple of doctests. They can be run using `cargo test`
 
+---
+
 # Documentation
 
 Documentation for the latest crate version is available here:
 - [docs.rs](https://docs.rs/arx-kw)
+
 Or for the latest commit to the main branch of this repository:
 - [Main Branch](https://mcaveniathor.github.io/arx-kw/doc/arx_kw/index.html)
