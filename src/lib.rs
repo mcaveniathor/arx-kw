@@ -49,7 +49,7 @@
 
 //! ```toml
 //! [dependencies]
-//! arx-kw = {version = "0.1.11", features = ["nightly"]}
+//! arx-kw = {version = "0.2", features = ["nightly"]}
 //! ```
 
 //! 

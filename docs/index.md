@@ -73,11 +73,12 @@ provides.
 `Eq` and `PartialEq` are by design *not* implemented for `AuthTag` to discourage equality
 checking that is not O(1), but the internal `[u8;16]` is public should you want to live 
 
-
+-
 -
 -
 -
 - Ḑ̷͉͎̺̳̭͖̗̦̪͓̂͗͒̓̅̆̋̐́̓̓̎̊͐̍̂̈͂̇͆̇͐̉̈̄̈́̈́̓̓̾͒̕͠à̸̢̛̤̠̺̩̱̤̭̪̮̙͈̱̀̍͂̋̓̓͊̈́͊̋̀̾͌͂͘͘̚n̶̡̡̢̪̼̲̫̪̯͖̟͕͚̬̠̥̫̱̮̖̼̪͚̜͙̥̬̙̪̩̮̞̰̼̲̭̏̀̀ģ̸̨̧̳̟͙͙̳̘̥͖̮̼̻͍̯̦̖͋͆̃̏͛̒̌̅͊̃̿̄̒̋͜͜͝͝ͅ ̸̧̟̼͉̳̰̥̮̙͈͖͙͎͇̙͍͚͔͒͋͋̋̒̚͠ͅͅͅè̵̡̘̲̪͔̪̥̹̟̾̅̓͛̐̐̽̅͌̊̓̔̍̓̿̊̆̂̈́͑̽̅̿̚͝͝r̵̛̭̺̠̙̞̫̗̞̪̗̹͎͌͌͌̒̏̌̅̇̉̑̂͋̅̅̀̔̉̾̋̅̏̓͘̚ờ̸̢̡̢̥̟̗̘͉̠̣͕̮͈͍͉̳̫̲̖͖̻̝̯̟͂̊̈́͑̇́͛̏͜͠u̷̎͋͂̽̉͒́̈́̑̋́̌͂̿̋̆́͜͝͝͝s̸̡̡̡̞̞͇͖̖͍̝͖̣̪͓͖̥̟͙̫̪̗͙̯̞͍̽̃̆̒̐̐̊̓̾̚̚ͅĺ̴͕͖͎̣̞͕̙̹̓͒y̷̢̠̠͇͉̘̠̩̳̲͗̑͐̿̿̐͗͊̀̽̀͐̀̿̔̈́͘͝͝
+-
 -
 -
 
@@ -135,6 +136,9 @@ for benchmarking, so the benchmarks can be run on stable or nightly Rust and off
 Conducted using the `criterion` crate on my machine using the `nightly` feature with a Ryzen 1700 @ 3.8 GHz and 8GB of RAM at 3000MHz. 
  - [Benchmarks](https://mcaveniathor.github.io/arx-kw/criterion/reports/index.html)
 
+
+## Prefer to run your own?
+
 #### To run benchmarks without SIMD:
 
 `cargo bench`
@@ -143,7 +147,7 @@ Conducted using the `criterion` crate on my machine using the `nightly` feature 
 
 `cargo --features nightly bench`
 
-f you run the benchmarks without the nightly feature and then with it, the output will show you the change in execution time.
+If you run the benchmarks without the nightly feature and then with it, the output will show you the change in execution time, for those curious.
 
 
 # Tests
@@ -152,5 +156,7 @@ Tests for encryption and decryption are provided for each of the four variants a
 
 # Documentation
 
+Documentation for the latest crate version is available here:
 - [docs.rs](https://docs.rs/arx-kw)
-- [Main Branchj](https://mcaveniathor.github.io/arx-kw/doc/arx_kw/index.html)
+Or for the latest commit to the main branch of this repository:
+- [Main Branch](https://mcaveniathor.github.io/arx-kw/doc/arx_kw/index.html)
