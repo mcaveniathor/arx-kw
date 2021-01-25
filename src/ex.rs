@@ -1,7 +1,9 @@
 use chacha::KeyStream;
 use crate::{util,ArxKW,ArxKwError,AuthTag,ConstantTimeEq};
 
-/// A user-friendly implementation of ARX-KW-8-2-4-EX
+/// A user-friendly implementation of ARX-KW-8-2-4-EX. Has a key length of 48 bytes and no maximum
+/// input length.
+/// See the `ArxKW` trait for usage.
 pub struct EX {}
 impl EX {
     /// The length in bytes of the secret key used by this variant of ARX-KW

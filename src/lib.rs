@@ -1,6 +1,8 @@
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
 #![allow(clippy::doc_markdown)]
+#![warn(clippy::all)]
+#![warn(missing_docs)]
 //!
 //! This library features implementations of the ARX-KW family of novel [Key Wrap](https://wikipedia.org/wiki/Key_Wrap) constructions.
 //!
@@ -135,26 +137,40 @@ use thiserror::Error;
 mod lqb;
 mod util;
 mod generate;
+
+/// Module containing items related to the ARX-KW-8-2-4-E variant
 pub mod e;
+/// Module containing items related to the ARX-KW-8-2-4-G variant
 pub mod g;
+/// Module containing items related to the ARX-KW-8-2-4-EX variant
 pub mod ex;
+/// Module containing items related to the ARX-KW-8-2-4-GX variant
 pub mod gx;
 pub use subtle::{ConstantTimeEq,Choice};
 
 #[derive(Error,Debug)]
+/// An error denoting that a value was of an invalid length. Typically this will be used as a
+/// variant of `ArxKwError` rather than on its own.
 pub enum InvalidLengthError {
-    #[error("Invalid key length: {0} (expected {1})")]
+    #[error("Invalid length: {0} (expected {1})")]
+    /// Invalid length in a context expecting a fixed length.
     _Fixed(usize,usize),
-    #[error("Invalid authentication tag length: {0} (Maximum: {1}")]
+    /// Invalid length in a context which accepts a variable length (e.g. plaintext and ciphertext
+    /// inputs)
+    #[error("Invalid length: {0} (Maximum: {1}")]
     UpTo(usize,usize)
 }
 #[derive(Error,Debug)]
+/// The error type used by this crate.
 pub enum ArxKwError {
     #[error("Invalid length: {0}")]
+    /// See `InvalidLengthError`
     InvalidLength(#[from] InvalidLengthError),
     #[error("Reached end of {0}ChaCha8 stream.")]
+    /// Occurs if a function using either ChaCha8 or XChaCha8 reaches the end of the stream
     ChaChaError(String), // Use "X" if it occurs while using an extended stream or "" otherwise
     #[error("Authentication tag does not match {0:x?} (Expected {1:x?})")]
+    /// Returns if an authentication tag mismatch occurs during decryption
     BadTags(AuthTag,AuthTag)
 }
 

@@ -1,6 +1,9 @@
 use chacha::KeyStream;
 use crate::{util,generate,ArxKW,ArxKwError,AuthTag};
 use crate::ConstantTimeEq;
+
+/// The ARX-8-2-4-GX variant. Has a key length of 32 bytes and no maximum input length. 
+/// See the `ArxKW` trait for usage.
 pub struct GX;
 impl GX {
     /// The length in bytes of the secret key used by this variant of ARX-KW
