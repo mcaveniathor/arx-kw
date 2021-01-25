@@ -41,7 +41,7 @@ Use the `nightly` feature to enable SIMD parallelization of the ChaCha computati
 
 ```
 [dependencies]
-arx-kw = {version = "0.2.12", features = ["nightly"]}
+arx-kw = {version = "0.2", features = ["nightly"]}
 ```
 
 ## When
@@ -57,7 +57,7 @@ data (as with general-purpose encryption schemes), it is vulnerable to "leakage"
 
 ## How
 
-Add `arx_kw = "0.2.12"` to your Cargo.toml dependencies section.
+Add `arx_kw = "0.2"` to your Cargo.toml dependencies section.
  
 Each public module of this crate contains a struct corresponding to one of the four specified
 ARX-KW-8-2-4 variants: ARX-8-2-4-`E`, ARX-8-2-4-`G`, ARX-8-2-4-`EX`, and ARX-8-2-4-`GX`. If you're not
@@ -73,11 +73,12 @@ provides.
 `Eq` and `PartialEq` are by design *not* implemented for `AuthTag` to discourage equality
 checking that is not O(1), but the internal `[u8;16]` is public should you want to live 
 
-
+-
 -
 -
 -
 - Ḑ̷͉͎̺̳̭͖̗̦̪͓̂͗͒̓̅̆̋̐́̓̓̎̊͐̍̂̈͂̇͆̇͐̉̈̄̈́̈́̓̓̾͒̕͠à̸̢̛̤̠̺̩̱̤̭̪̮̙͈̱̀̍͂̋̓̓͊̈́͊̋̀̾͌͂͘͘̚n̶̡̡̢̪̼̲̫̪̯͖̟͕͚̬̠̥̫̱̮̖̼̪͚̜͙̥̬̙̪̩̮̞̰̼̲̭̏̀̀ģ̸̨̧̳̟͙͙̳̘̥͖̮̼̻͍̯̦̖͋͆̃̏͛̒̌̅͊̃̿̄̒̋͜͜͝͝ͅ ̸̧̟̼͉̳̰̥̮̙͈͖͙͎͇̙͍͚͔͒͋͋̋̒̚͠ͅͅͅè̵̡̘̲̪͔̪̥̹̟̾̅̓͛̐̐̽̅͌̊̓̔̍̓̿̊̆̂̈́͑̽̅̿̚͝͝r̵̛̭̺̠̙̞̫̗̞̪̗̹͎͌͌͌̒̏̌̅̇̉̑̂͋̅̅̀̔̉̾̋̅̏̓͘̚ờ̸̢̡̢̥̟̗̘͉̠̣͕̮͈͍͉̳̫̲̖͖̻̝̯̟͂̊̈́͑̇́͛̏͜͠u̷̎͋͂̽̉͒́̈́̑̋́̌͂̿̋̆́͜͝͝͝s̸̡̡̡̞̞͇͖̖͍̝͖̣̪͓͖̥̟͙̫̪̗͙̯̞͍̽̃̆̒̐̐̊̓̾̚̚ͅĺ̴͕͖͎̣̞͕̙̹̓͒y̷̢̠̠͇͉̘̠̩̳̲͗̑͐̿̿̐͗͊̀̽̀͐̀̿̔̈́͘͝͝
+-
 -
 -
 
@@ -128,6 +129,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 The benches directory contains encrypt and decrypt benchmarks for each ARX-KW variant. This crate uses the `criterion` crate
 for benchmarking, so the benchmarks can be run on stable or nightly Rust and offer more detailed output.
 
+---
+
+## My Benchmarks
+
+Conducted using the `criterion` crate on my machine using the `nightly` feature with a Ryzen 1700 @ 3.8 GHz and 8GB of RAM at 3000MHz. 
+ - [Benchmarks](https://mcaveniathor.github.io/arx-kw/criterion/reports/index.html)
+
+
+## Prefer to run your own?
+
 #### To run benchmarks without SIMD:
 
 `cargo bench`
@@ -136,9 +147,16 @@ for benchmarking, so the benchmarks can be run on stable or nightly Rust and off
 
 `cargo --features nightly bench`
 
-f you run the benchmarks without the nightly feature and then with it, the output will show you the change in execution time.
+If you run the benchmarks without the nightly feature and then with it, the output will show you the change in execution time, for those curious.
 
 
 # Tests
 
 Tests for encryption and decryption are provided for each of the four variants and use the test vectors from the original ARX-KW paper, along with a couple of doctests. They can be run using `cargo test`
+
+# Documentation
+
+Documentation for the latest crate version is available here:
+- [docs.rs](https://docs.rs/arx-kw)
+Or for the latest commit to the main branch of this repository:
+- [Main Branch](https://mcaveniathor.github.io/arx-kw/doc/arx_kw/index.html)
