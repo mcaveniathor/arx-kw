@@ -2,9 +2,10 @@
 
 [![crates.io](https://img.shields.io/crates/v/arx-kw.svg)](https://crates.io/crates/arx-kw)
 [![Docs.rs](https://docs.rs/arx-kw/badge.svg)](https://docs.rs/arx-kw)
-[![Build Status](https://www.travis-ci.com/mcaveniathor/arx-kw.svg?branch=main)](https://www.travis-ci.com/mcaveniathor/arx-kw)
 [![Rust Report Card](https://rust-reportcard.xuri.me/badge/github.com/mcaveniathor/arx-kw)](https://rust-reportcard.xuri.me/report/github.com/mcaveniathor/arx-kw)
 [![dependency status](https://deps.rs/crate/arx-kw/0.2.12/status.svg)](https://deps.rs/crate/arx-kw/0.2.12)
+[![Build Status](https://www.travis-ci.com/mcaveniathor/arx-kw.svg?branch=main)](https://www.travis-ci.com/mcaveniathor/arx-kw)
+[![codecov](https://codecov.io/gh/mcaveniathor/arx-kw/branch/main/graph/badge.svg?token=OVCFNGQDSH)](https://codecov.io/gh/mcaveniathor/arx-kw)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 
 ---
