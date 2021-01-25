@@ -190,7 +190,6 @@ impl std::convert::AsRef<[u8;16]> for AuthTag {
 
 impl ConstantTimeEq for AuthTag {
     fn ct_eq(&self, other: &Self) -> Choice {
-        println!("peepee");
         self.0.ct_eq(&other.0)
     }
 }

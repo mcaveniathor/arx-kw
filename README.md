@@ -125,7 +125,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 # Benchmarks
 
-Presently there are just single encrypt and decrypt benchmarks in the benches directory. They can be run by cloning this repository and running the command `cargo bench`.
+The benches directory contains encrypt and decrypt benchmarks for each ARX-KW variant. This crate uses the `criterion` crate
+for benchmarking, so the benchmarks can be run on stable or nightly Rust and offer more detailed output.
+
+#### To run benchmarks without SIMD:
+
+`cargo bench`
+
+#### To run benchmarks with SIMD:
+
+`cargo --features nightly bench`
+
+f you run the benchmarks without the nightly feature and then with it, the output will show you the change in execution time.
+
 
 # Tests
 

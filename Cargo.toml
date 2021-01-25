@@ -26,3 +26,23 @@ subtle = "2.4.0"
 [dev-dependencies]
 hex = "0.4.2"
 anyhow = "1.0"
+criterion = "0.3"
+
+
+# Benches run with Criterion
+
+[[bench]]
+name = "e"
+harness = false
+
+[[bench]]
+name = "ex"
+harness = false
+
+[[bench]]
+name = "g"
+harness = false
+
+[[bench]]
+name = "gx"
+harness = false
