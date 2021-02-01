@@ -3,11 +3,12 @@ use crate::{util,generate,ArxKW,ArxKwError,AuthTag};
 use crate::ConstantTimeEq;
 
 /// The ARX-8-2-4-GX variant. Has a key length of 32 bytes and no maximum input length. 
-/// See the `ArxKW` trait for usage.
+/// See the [`ArxKW`] trait for usage.
 pub struct GX;
 impl GX {
     /// The length in bytes of the secret key used by this variant of ARX-KW
     #[must_use]
+    #[cfg(not(tarpaulin_include))]
     pub const fn key_length() -> usize {
         32
     }
@@ -33,11 +34,9 @@ impl ArxKW for GX {
         stream.xor_read(&mut p_prime).map_err(|e| ArxKwError::ChaChaError(format!("{:?}: X",e)))?;
         let t_prime = util::sip_array_keyed(&k1, &p_prime);
         if bool::from(t_prime.ct_eq(authentication_tag)) { // Equality check is done in constant time
-            Ok(p_prime)
+            return Ok(p_prime);
         }
-        else {
-            Err(ArxKwError::BadTags(t_prime, *authentication_tag))
-        }
+        Err(ArxKwError::BadTags(t_prime, *authentication_tag))
     }
 
 }
@@ -99,6 +98,7 @@ const NONCE_INIT_GX: [u8;24] = [0x61, 0x72, 0x62, 0x69, 0x74, 0x72, 0x47, 0x58,0
 /// ```
 #[must_use]
 #[inline]
+#[cfg(not(tarpaulin_include))]
 pub fn construct_nonce(authentication_tag: &AuthTag) -> [u8;24] {
     // Initialize nonce with the defined prefix followed by 16 zeros.
     let mut nonce = NONCE_INIT_GX;
@@ -121,12 +121,32 @@ mod tests {
         let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
         let t_expected = AuthTag(<[u8; 16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?);
         let c_expected = <[u8; 32]>::from_hex("2f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?;
-        println!("{}","2f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3".len());
         let (c,t) = GX::encrypt(&k, &p)?;
         assert_eq!(&c.to_vec(), &c_expected);
         assert_ct_eq!(t, &t_expected);
         Ok(())
     }
+
+    #[test]
+    fn test_encrypt_blob() -> Result<()> {
+        let k = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
+        let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+        let blob_expected = <[u8; 48]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?;
+        let blob = GX::encrypt_blob(&k, &p)?;
+        assert_ct_eq!(blob, &blob_expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_decrypt_blob() -> Result<()> {
+        let k = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
+        let p_expected = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+        let blob= <[u8; 48]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?;
+        let p = GX::decrypt_blob(&k, &blob)?;
+        assert_ct_eq!(&p, &p_expected);
+        Ok(())
+    }
+
     #[test]
     fn test_decrypt() -> Result<()> {
         let k = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
@@ -138,7 +158,16 @@ mod tests {
         Ok(())
     }
 
-   
+    /// Make sure that a bad authentication tag yields an error when decrypting
+    #[test]
+    fn test_bad_decrypt() -> Result<()> {
+        let k = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
+        let c = <[u8; 32]>::from_hex("2283f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?; // First two hex digits should be 2f instead of 22
+        let t_bad = AuthTag(<[u8; 16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?);
+        let res = GX::decrypt(&k, &c, &t_bad);
+        assert!(res.is_err());
+        Ok(())
+    }
 }
 
 

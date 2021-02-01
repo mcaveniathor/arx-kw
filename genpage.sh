@@ -3,6 +3,6 @@
 cargo criterion --features nightly
 
 cargo doc
-mv target/doc/* docs/doc
+mv -f target/doc/* docs/doc
 
-cp README.me docs/index.md
+cp README.md docs/index.md

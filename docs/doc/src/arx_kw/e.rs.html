@@ -156,6 +156,17 @@
 <span id="153">153</span>
 <span id="154">154</span>
 <span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">util</span>,
@@ -168,10 +179,11 @@
 };
 
 <span class="doccomment">/// The ARX-8-2-4-E variant. Has a key length of 48 bytes and a maximum input length of 64 bytes.</span>
-<span class="doccomment">/// See the `ArxKW` trait for usage.</span>
+<span class="doccomment">/// See the [`ArxKW`] trait for usage.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">E</span>;
 <span class="kw">impl</span> <span class="ident">E</span> {
     <span class="attribute">#[<span class="ident">must_use</span>]</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">tarpaulin_include</span>))]</span>
     <span class="doccomment">/// The length in bytes of the secret key used by this variant of ARX-KW</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">key_length</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="number">48</span>
@@ -186,6 +198,7 @@
     <span class="doccomment">/// variants are defined only for plaintext/ciphertext inputs of no more than 512 bits, the length</span>
     <span class="doccomment">/// of a ChaCha Block, whereas *EX* and *GX* do not have this limitation.</span>
 
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">tarpaulin_include</span>))]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">max_input_length</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="number">64</span>
     }
@@ -195,8 +208,8 @@
 <span class="kw">impl</span> <span class="ident">ArxKW</span> <span class="kw">for</span> <span class="ident">E</span> {
     <span class="kw">type</span> <span class="ident">Key</span> <span class="op">=</span> [<span class="ident">u8</span>; <span class="self">Self</span>::<span class="ident">key_length</span>()];
     <span class="kw">fn</span> <span class="ident">encrypt</span>(<span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Key</span>, <span class="ident">plaintext</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">AuthTag</span>), <span class="ident">ArxKwError</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">plaintext</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">48</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">ArxKwError</span>::<span class="ident">InvalidLength</span>(<span class="ident">InvalidLengthError</span>::<span class="ident">UpTo</span>(<span class="ident">plaintext</span>.<span class="ident">len</span>(), <span class="number">48</span>)))
+        <span class="kw">if</span> <span class="ident">plaintext</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">max_input_length</span>() {
+            <span class="prelude-val">Err</span>(<span class="ident">ArxKwError</span>::<span class="ident">InvalidLength</span>(<span class="ident">InvalidLengthError</span>::<span class="ident">UpTo</span>(<span class="ident">plaintext</span>.<span class="ident">len</span>(), <span class="self">Self</span>::<span class="ident">max_input_length</span>())))
         } <span class="kw">else</span> {
             <span class="kw">let</span> (<span class="ident">k1</span>,<span class="ident">k2</span>) <span class="op">=</span> <span class="macro">array_refs</span><span class="macro">!</span>[<span class="ident">key</span>,<span class="number">16</span>,<span class="number">32</span>];
             <span class="kw">let</span> <span class="ident">authentication_tag</span> <span class="op">=</span> <span class="ident">util</span>::<span class="ident">sip_array_keyed</span>(<span class="ident">k1</span>, <span class="ident">plaintext</span>);
@@ -206,51 +219,19 @@
     }
     
     <span class="kw">fn</span> <span class="ident">decrypt</span>(<span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Key</span>, <span class="ident">ciphertext</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">authentication_tag</span>: <span class="kw-2">&amp;</span><span class="ident">AuthTag</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">ArxKwError</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">ciphertext</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">48</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">ArxKwError</span>::<span class="ident">InvalidLength</span>(<span class="ident">InvalidLengthError</span>::<span class="ident">UpTo</span>(<span class="ident">ciphertext</span>.<span class="ident">len</span>(), <span class="number">48_usize</span>)))
+        <span class="kw">if</span> <span class="ident">ciphertext</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">max_input_length</span>() {
+            <span class="prelude-val">Err</span>(<span class="ident">ArxKwError</span>::<span class="ident">InvalidLength</span>(<span class="ident">InvalidLengthError</span>::<span class="ident">UpTo</span>(<span class="ident">ciphertext</span>.<span class="ident">len</span>(), <span class="self">Self</span>::<span class="ident">max_input_length</span>())))
         } <span class="kw">else</span> {
             <span class="kw">let</span> (<span class="ident">k1</span>,<span class="ident">k2</span>) <span class="op">=</span> <span class="macro">array_refs</span><span class="macro">!</span>[<span class="ident">key</span>,<span class="number">16</span>,<span class="number">32</span>];
             <span class="kw">let</span> <span class="ident">p_prime</span> <span class="op">=</span> <span class="ident">lqb</span>::<span class="ident">chacha8_encrypt</span>(<span class="ident">k2</span>, <span class="ident">authentication_tag</span>.<span class="ident">as_ref</span>(), <span class="ident">ciphertext</span>)<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">t_prime</span> <span class="op">=</span> <span class="ident">util</span>::<span class="ident">sip_array_keyed</span>(<span class="ident">k1</span>, <span class="kw-2">&amp;</span><span class="ident">p_prime</span>);
             <span class="kw">if</span> <span class="ident">bool</span>::<span class="ident">from</span>(<span class="ident">t_prime</span>.<span class="ident">ct_eq</span>(<span class="ident">authentication_tag</span>)) { <span class="comment">// Compare AuthTags in constant time</span>
-                <span class="prelude-val">Ok</span>(<span class="ident">p_prime</span>)
+                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">p_prime</span>);
             }
-            <span class="kw">else</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">ArxKwError</span>::<span class="ident">BadTags</span>(<span class="ident">t_prime</span>, <span class="kw-2">*</span><span class="ident">authentication_tag</span>))
-            }
+            <span class="prelude-val">Err</span>(<span class="ident">ArxKwError</span>::<span class="ident">BadTags</span>(<span class="ident">t_prime</span>, <span class="kw-2">*</span><span class="ident">authentication_tag</span>))
         }
     }
 }
-
-<span class="comment">/*
-/// Encrypts p in place and returns the authentication tag
-pub fn encrypt_in_place(k: &amp;[u8; KEY_LEN], mut p: &amp;mut[u8]) -&gt; Result&lt;[u8;AUTHENTICATION_TAG_LEN]&gt; {
-    if p.len() &gt; MAX_MESSAGE_LEN {
-        bail!(&quot;Invalid length for plaintext input to ARX-KW-8-2-4-E encryption: {} bytes (Maximum: {} bytes)&quot;, p.len(), MAX_MESSAGE_LEN);
-    }
-    let (k1,k2) = array_refs![k, K1_LEN, K2_LEN];
-    let t = util::sip_array_keyed(k1, p).as_bytes();
-    lqb::chacha8_lqb_mut(k2,&amp;t,&amp;mut p)?;
-    Ok(t)
-}
-
-/// Decrypts c in place
-pub fn decrypt_in_place(k: &amp;[u8;KEY_LEN], mut c: &amp;mut [u8], t: &amp;[u8;AUTHENTICATION_TAG_LEN]) -&gt; Result&lt;()&gt; {
-    // ARX-KW-8-2-4-E yields a ciphertext no longer than 512 bits
-    if c.len() &gt; MAX_MESSAGE_LEN {
-        bail!(&quot;Invalid length for ciphertext input to ARX-KW-8-2-4-E decryption: {} bytes (Maximum: {} bytes)&quot;, c.len(), MAX_MESSAGE_LEN);
-    }
-    let (k1,k2) = array_refs![k, K1_LEN, K2_LEN];  // Array reference equivalent of (&amp;k[0..16], &amp;k[16..48])
-    lqb::chacha8_lqb_mut(k2,t,&amp;mut c)?;
-    let t_prime = util::sip_array_keyed(k1,c).as_bytes();
-    if bool::from(t_prime.ct_eq(t)) {
-        Ok(())
-    }
-    else {
-        bail!(&quot;Decryption failed: authentication tags do not match.&quot;);
-    }
-}
-*/</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
@@ -269,6 +250,9 @@ pub fn decrypt_in_place(k: &amp;[u8;KEY_LEN], mut c: &amp;mut [u8], t: &amp;[u8;
     <span class="kw">fn</span> <span class="ident">test_encrypt</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">48</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">p_bad</span> <span class="op">=</span> [<span class="number">0xaf</span>; <span class="number">69</span>];
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">E</span>::<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>, <span class="kw-2">&amp;</span><span class="ident">p_bad</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">res</span>.<span class="ident">is_err</span>());
         <span class="kw">let</span> <span class="ident">t_expected</span> <span class="op">=</span> <span class="ident">AuthTag</span>(<span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">16</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;c4f21d3b4dbcc566c3a73bbc59790f2f&quot;</span>)<span class="question-mark">?</span>);
         <span class="kw">let</span> <span class="ident">c_expected</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;e6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> (<span class="ident">c</span>,<span class="ident">t</span>) <span class="op">=</span> <span class="ident">E</span>::<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>, <span class="kw-2">&amp;</span><span class="ident">p</span>)<span class="question-mark">?</span>;
@@ -276,17 +260,55 @@ pub fn decrypt_in_place(k: &amp;[u8;KEY_LEN], mut c: &amp;mut [u8], t: &amp;[u8;
         <span class="macro">assert_ct_eq</span><span class="macro">!</span>(<span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="ident">t_expected</span>);
         <span class="prelude-val">Ok</span>(())
     }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_encrypt_blob</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">48</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">blob_expected</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">48</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;c4f21d3b4dbcc566c3a73bbc59790f2fe6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">blob</span> <span class="op">=</span> <span class="ident">E</span>::<span class="ident">encrypt_blob</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>, <span class="kw-2">&amp;</span><span class="ident">p</span>)<span class="question-mark">?</span>;
+        <span class="macro">assert_ct_eq</span><span class="macro">!</span>(<span class="ident">blob</span>, <span class="kw-2">&amp;</span><span class="ident">blob_expected</span>);
+        <span class="prelude-val">Ok</span>(())
+    }
+
+
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_decrypt</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-
         <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;e6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">48</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">AuthTag</span>(<span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">16</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;c4f21d3b4dbcc566c3a73bbc59790f2f&quot;</span>)<span class="question-mark">?</span>);
         <span class="kw">let</span> <span class="ident">p_expected</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>;<span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">E</span>::<span class="ident">decrypt</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>, <span class="kw-2">&amp;</span><span class="ident">c</span>, <span class="kw-2">&amp;</span><span class="ident">t</span>)<span class="question-mark">?</span>;
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">p</span>, <span class="ident">p_expected</span>);
+        <span class="macro">assert_ct_eq</span><span class="macro">!</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="ident">p_expected</span>);
         <span class="prelude-val">Ok</span>(())
     }
+
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_decrypt_blob</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">48</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">blob</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">48</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;c4f21d3b4dbcc566c3a73bbc59790f2fe6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">p_expected</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>;<span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">E</span>::<span class="ident">decrypt_blob</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>, <span class="kw-2">&amp;</span><span class="ident">blob</span>)<span class="question-mark">?</span>;
+        <span class="macro">assert_ct_eq</span><span class="macro">!</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="ident">p_expected</span>);
+        <span class="prelude-val">Ok</span>(())
+    }
+
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_decrypt_bad</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">48</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;e6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">c_bad</span> <span class="op">=</span> [<span class="number">0xbb</span>; <span class="number">69</span>];
+        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">AuthTag</span>(<span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">16</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;c4f21d3b4dbcc566c3a73bbc59790f2f&quot;</span>)<span class="question-mark">?</span>); <span class="comment">// good tag</span>
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">E</span>::<span class="ident">decrypt</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>, <span class="kw-2">&amp;</span><span class="ident">c_bad</span>, <span class="kw-2">&amp;</span><span class="ident">t</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">res</span>.<span class="ident">is_err</span>());
+        <span class="kw">let</span> <span class="ident">t_bad</span> <span class="op">=</span> <span class="ident">AuthTag</span>(<span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">16</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;c4f21d3b4dbcc566c3a73bbc59790fff&quot;</span>)<span class="question-mark">?</span>); <span class="comment">// last 2 hex digits should be 2f</span>
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">E</span>::<span class="ident">decrypt</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>, <span class="kw-2">&amp;</span><span class="ident">c</span>, <span class="kw-2">&amp;</span><span class="ident">t_bad</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">res</span>.<span class="ident">is_err</span>());
+        <span class="prelude-val">Ok</span>(())
+    }
+
     <span class="comment">/*
     #[test]
     fn test_encrypt_in_place() -&gt; Result&lt;()&gt; {

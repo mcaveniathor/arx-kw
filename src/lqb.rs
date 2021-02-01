@@ -15,6 +15,9 @@ pub struct ChaChaLQB {
     pub large_block_counter: bool,
 }
 
+/*
+ * UNUSED
+ *  
 /// Instantiates a ChaCha8 stream with the given key and lower quarter block (LQB) initialized to the 128-bit value
 /// passed as the parameter `lqb`, then  XORs the keystream with msg **in-place**, returning an error
 /// if the end of the stream is reached.
@@ -23,6 +26,7 @@ fn _chacha8_encrypt_mut(key: &[u8;32], lqb: &[u8;16], mut msg: &mut [u8]) -> Res
     let mut stream = new_chacha8_with_counter(key, *counter, *nonce);
     stream.xor_read(&mut msg).map_err(|e| ArxKwError::ChaChaError(format!("Reached end of chacha stream: {:?} ",e)))
 }
+*/
 
 /// Instantiates a ChaCha stream with the given key and lower quarter block (LQB) initialized to the 128-bit value
 /// passed as the parameter `lqb`, then  XORs the keystream with msg, returning an error

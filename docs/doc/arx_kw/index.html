@@ -1,7 +1,16 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `arx_kw` crate."><meta name="keywords" content="rust, rustlang, rust-lang, arx_kw"><title>arx_kw - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../arx_kw/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><p class="location">Crate arx_kw</p><div class="block version"><p>Version 0.2.12</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all arx_kw's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li></ul></div><p class="location"></p><div id="sidebar-vars" data-name="arx_kw" data-ty="mod" data-relpath="../"></div></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
-                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/arx_kw/lib.rs.html#1-239" title="goto source code">[src]</a></span><span class="in-band">Crate <a class="mod" href="">arx_kw</a></span></h1><div class="docblock"><p>This library features implementations of the ARX-KW family of novel <a href="https://wikipedia.org/wiki/Key_Wrap">Key Wrap</a> constructions.</p>
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../arx_kw/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><p class="location">Crate arx_kw</p><div class="block version"><p>Version 0.3.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all arx_kw's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li></ul></div><p class="location"></p><div id="sidebar-vars" data-name="arx_kw" data-ty="mod" data-relpath="../"></div></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/arx_kw/lib.rs.html#1-385" title="goto source code">[src]</a></span><span class="in-band">Crate <a class="mod" href="">arx_kw</a></span></h1><div class="docblock"><h1 id="arx-kw" class="section-header"><a href="#arx-kw">ARX-KW</a></h1>
+<p><a href="https://crates.io/crates/arx-kw"><img src="https://img.shields.io/crates/v/arx-kw.svg" alt="crates.io" /></a>
+<a href="https://docs.rs/arx-kw"><img src="https://docs.rs/arx-kw/badge.svg" alt="Docs.rs" /></a>
+<a href="https://rust-reportcard.xuri.me/report/github.com/mcaveniathor/arx-kw"><img src="https://rust-reportcard.xuri.me/badge/github.com/mcaveniathor/arx-kw" alt="Rust Report Card" /></a>
+<a href="https://deps.rs/crate/arx-kw/0.2.12"><img src="https://deps.rs/crate/arx-kw/0.2.12/status.svg" alt="dependency status" /></a>
+<a href="https://www.travis-ci.com/mcaveniathor/arx-kw"><img src="https://www.travis-ci.com/mcaveniathor/arx-kw.svg?branch=main" alt="Build Status" /></a>
+<a href="https://codecov.io/gh/mcaveniathor/arx-kw"><img src="https://codecov.io/gh/mcaveniathor/arx-kw/branch/main/graph/badge.svg?token=OVCFNGQDSH" alt="codecov" /></a>
+<a href="https://lbesson.mit-license.org/"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT license" /></a></p>
+<p>This library features implementations of the ARX-KW family of novel <a href="https://wikipedia.org/wiki/Key_Wrap">Key Wrap</a> constructions.</p>
+<p>The version number for this crate will be incremented in compliance with <a href="https://semver.org/">Semantic Versioning</a>. </p>
 <hr />
 <h1 id="background" class="section-header"><a href="#background">Background</a></h1>
 <p>ARX-KW was first presented in <a href="https://ia.cr/2020/059">this paper</a> written by Satō Shinichi and submitted to the IACR Cryptology ePrint Archive in January 2020. As the name
@@ -10,8 +19,8 @@ variants specified involves both the <a href="https://wikipedia.org/wiki/SipHash
 a stream cipher from the <a href="https://en.wikipedia.org/wiki/Salsa20"><code>ChaCha</code></a> family of stream ciphers.</p>
 <p>ARX-KW is a cipher for deteministic, authenticated encryption which aims to provide strong
 authenticity and confidentiality while minimizing the storage overhead and simplicity of use
-when compared to existing constructions using the ChaCha cipher either which require keeping state for a nonce and 
-a block counter or have a substantial storage overhead in order to manage the nonce
+when compared to existing constructions using the ChaCha cipher which require either keeping state for a nonce and 
+a block counter or having a substantial storage overhead in order to manage the nonce
 statelessly.</p>
 <p>ARX-KW has a static overhead of 128 bits for each of its four variants without the need to keep
 state for the nonce used by ChaCha, making the storage overhead only 50% for a 256-bit key</p>
@@ -27,21 +36,47 @@ data (as with general-purpose encryption schemes), it is vulnerable to &quot;lea
 <p>Deterministic encryption can leak information to an eavesdropper, who may recognize known ciphertexts. For example, when an adversary learns that a given ciphertext corresponds to some interesting message, they can learn something every time that ciphertext is transmitted. To gain information about the meaning of various ciphertexts, an adversary might perform a statistical analysis of messages transmitted over an encrypted channel, or attempt to correlate ciphertexts with observed actions (e.g., noting that a given ciphertext is always received immediately before a submarine dive).</p>
 </blockquote>
 <p>If used to store secret key material (by nature high entropy), this is not an issue as an attacker gains no information about the key encapsulated within. </p>
-<h2 id="features" class="section-header"><a href="#features">Features</a></h2>
+<h2 id="features" class="section-header"><a href="#features">Features</a></h2><h4 id="nightly" class="section-header"><a href="#nightly">Nightly</a></h4>
 <p>Use the <code>nightly</code> feature to enable SIMD parallelization of the ChaCha computations (nightly Rust required):</p>
-<h4 id="cargotoml" class="section-header"><a href="#cargotoml">Cargo.toml</a></h4>
+<p><em>Cargo.toml</em></p>
 <pre><code class="language-toml">[dependencies]
-arx-kw = {version = &quot;0.1.11&quot;, features = [&quot;nightly&quot;]}
+arx-kw = {version = &quot;0.3&quot;, features = [&quot;nightly&quot;]}
+</code></pre>
+<h4 id="variants-1" class="section-header"><a href="#variants-1">Variants</a></h4>
+<p>The four variants are gated under individual features (&quot;e&quot;, &quot;g&quot;, &quot;ex&quot;, and &quot;gx&quot;) for conditional compilation if not all
+are going to be used. All are enabled by default, but for example if you only want to use
+the <a href="../arx_kw/gx/struct.GX.html" title="gx::GX"><code>gx::GX</code></a> variant:</p>
+<p><em>Cargo.toml</em></p>
+<pre><code class="language-toml">[dependencies]
+arx-kw = { version = &quot;0.3&quot;, default-features=false, features=[&quot;gx&quot;] }
 </code></pre>
 <h2 id="how" class="section-header"><a href="#how">How</a></h2>
 <p>Each public module of this crate contains a struct corresponding to one of the four specified
 ARX-KW-8-2-4 variants: ARX-8-2-4-<code>E</code>, ARX-8-2-4-<code>G</code>, ARX-8-2-4-<code>EX</code>, and ARX-8-2-4-<code>GX</code>. If you're not
-sure which to use, <code>gx::GX</code> is recommended. The functionality is provided by the <code>ArxKW</code> trait,
-so that will need to be in scope to use the <code>encrypt</code> and <code>decrypt</code> methods. The
-<code>ConstantTimeEq</code> trait from the <code>subtle</code> crate is re-exported by this crate and is implemented
-on the <code>AuthTag</code> type as well as those covered by the blanket implementations <code>subtle</code>
+sure which to use, <a href="../arx_kw/gx/struct.GX.html" title="gx::GX"><code>gx::GX</code></a> is recommended. The functionality is provided by the <code>ArxKW</code> trait,
+so that will need to be in scope to use the <a href="../arx_kw/trait.ArxKW.html#tymethod.encrypt" title="ArxKW::encrypt"><code>ArxKW::encrypt</code></a>/<a href="../arx_kw/trait.ArxKW.html#method.encrypt_blob" title="ArxKW::encrypt_blob"><code>ArxKW::encrypt_blob</code></a> and <a href="../arx_kw/trait.ArxKW.html#tymethod.decrypt" title="ArxKW::decrypt"><code>ArxKW::decrypt</code></a>/<a href="../arx_kw/trait.ArxKW.html#method.decrypt_blob" title="ArxKW::decrypt_blob"><code>ArxKW::decrypt_blob</code></a> methods. The
+<a href="../arx_kw/trait.ConstantTimeEq.html" title="ConstantTimeEq"><code>ConstantTimeEq</code></a> trait from the <code>subtle</code> crate is re-exported by this crate and is implemented
+on the <a href="../arx_kw/struct.AuthTag.html" title="AuthTag"><code>AuthTag</code></a> type as well as those covered by the blanket implementations <code>subtle</code>
 provides.</p>
-<p><code>Eq</code> and <code>PartialEq</code> are by design <em>not</em> implemented for <code>AuthTag</code> to discourage equality
+<ul>
+<li>
+<p>Encryption and decryption of secret plaintext can be performed using the <a href="../arx_kw/trait.ArxKW.html#tymethod.encrypt" title="ArxKW::encrypt"><code>ArxKW::encrypt</code></a>
+and <a href="../arx_kw/trait.ArxKW.html#tymethod.decrypt" title="ArxKW::decrypt"><code>ArxKW::decrypt</code></a> methods, which remove the need to keep track of nonces and how to
+store/transport them. These methods treat authentication tags and ciphertexts as separate
+entities; if you need the flexibility of handling them separately, use these -- otherwise, the
+<a href="../arx_kw/trait.ArxKW.html#method.encrypt_blob" title="ArxKW::encrypt_blob"><code>ArxKW::encrypt_blob</code></a> and <a href="../arx_kw/trait.ArxKW.html#method.decrypt_blob" title="ArxKW::decrypt_blob"><code>ArxKW::decrypt_blob</code></a> methods described below offer a further layer of abstraction and
+ease of use at no performance cost.</p>
+</li>
+<li>
+<p>The <a href="../arx_kw/trait.ArxKW.html#method.encrypt_blob" title="ArxKW::encrypt_blob"><code>ArxKW::encrypt_blob</code></a> and <a href="../arx_kw/trait.ArxKW.html#method.decrypt_blob" title="ArxKW::decrypt_blob"><code>ArxKW::decrypt_blob</code></a> methods further improve ease of use by allowing the
+user to treat a <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="Vec&lt;u8&gt;"><code>Vec&lt;u8&gt;</code></a> consisting of an authentication tag  followed by the corresponding
+ciphertext as a single opaque blob. Consequently, not only is the issue of nonce management
+addressed by ARX-KW, but management of authentication tags as well! The blob can be stored or
+transported in one piece, saving headache, database retrievals, and making it easy to perform
+key wrapping in a safe and simple way.</p>
+</li>
+</ul>
+<p><a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="Eq"><code>Eq</code></a> and <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="PartialEq"><code>PartialEq</code></a> are by design <em>not</em> implemented for <a href="../arx_kw/struct.AuthTag.html" title="AuthTag"><code>AuthTag</code></a> to discourage equality
 checking that is not O(1), but the internal <code>[u8;16]</code> is public should you want to live </p>
 <blockquote>
 <p><br><br><br><br><br></p>
@@ -60,39 +95,51 @@ checking that is not O(1), but the internal <code>[u8;16]</code> is public shoul
     <span class="ident">ConstantTimeEq</span>, <span class="comment">// From the subtle crate, allows for equality checking in constant time</span>
                     <span class="comment">// (impl&#39;d for AuthTag and re-exported by this crate)</span>
     <span class="ident">assert_ct_eq</span>,
-    <span class="ident">AuthTag</span>
 };
 
-<span class="comment">// Encrypt a key using ARX-KW-8-2-4-GX</span>
+<span class="comment">// Encrypt a key using ARX-KW-8-2-4-GX with the encrypt_blob method</span>
 
 <span class="comment">// The values used here are from the test vectors in the original ARX-KW paper.</span>
-<span class="comment">// Inputs</span>
-<span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f&quot;</span>)<span class="question-mark">?</span>; <span class="comment">// The key we are using to wrap the plaintext secret key</span>
-<span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef&quot;</span>)<span class="question-mark">?</span>; <span class="comment">// The plaintext secret key we want to store/transport securely</span>
-<span class="comment">// Expected outputs</span>
-<span class="kw">let</span> <span class="ident">c_expected</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;2f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3&quot;</span>)<span class="question-mark">?</span>; <span class="comment">// The ciphertext which contains the wrapped key.</span>
+<span class="comment">/* 
+ * Inputs
+ */</span> 
+<span class="comment">// The encryption key we are using to wrap the plaintext secret key</span>
+<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f&quot;</span>)<span class="question-mark">?</span>; 
+<span class="comment">// The plaintext secret key we want to store/transport securely</span>
+<span class="kw">let</span> <span class="ident">plaintext</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef&quot;</span>)<span class="question-mark">?</span>; 
 
-<span class="comment">// The authentication tag. Note that we wrap this in AuthTag() rather than just using a [u8;16] so that we get constant time equality checking</span>
-<span class="kw">let</span> <span class="ident">t_expected</span> <span class="op">=</span> <span class="ident">AuthTag</span>(<span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">16</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;016325cf6a3c4b2e3b039675e1ccbc65&quot;</span>)<span class="question-mark">?</span>);
-<span class="comment">// Perform the encryption, returning the encrypted ciphertext and the authentication tag.</span>
-<span class="kw">let</span> (<span class="ident">ciphertext</span>, <span class="ident">authentication_tag</span>) <span class="op">=</span> <span class="ident">GX</span>::<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>, <span class="kw-2">&amp;</span><span class="ident">p</span>)<span class="question-mark">?</span>;
-<span class="macro">assert_ct_eq</span><span class="macro">!</span>(<span class="ident">ciphertext</span>, <span class="kw-2">&amp;</span><span class="ident">c_expected</span>);
-<span class="macro">assert_ct_eq</span><span class="macro">!</span>(<span class="ident">authentication_tag</span>, <span class="kw-2">&amp;</span><span class="ident">t_expected</span>);
+<span class="comment">/*
+ * Expected output: 
+ * A Vec&lt;u8&gt; containing the authentication tag followed by the ciphertext containing the
+ * wrapped key. We can treat this as an opaque blob when using the encrypt_blob and decrypt_blob
+ * methods, meaning we don&#39;t have to manually manage authentication tags or nonces.
+ */</span>
+<span class="kw">let</span> <span class="ident">blob_expected</span> <span class="op">=</span> <span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">48</span>]<span class="op">&gt;</span>::<span class="ident">from_hex</span>(<span class="string">&quot;016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3&quot;</span>)<span class="question-mark">?</span>;
 
-<span class="comment">// Decrypt the wrapped key</span>
+<span class="comment">/*
+ * Key wrapping performed in one line, simply passing the 
+ * encryption key and the plaintext to be encrypted.
+ */</span>
+<span class="kw">let</span> <span class="ident">blob</span> <span class="op">=</span> <span class="ident">GX</span>::<span class="ident">encrypt_blob</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="ident">plaintext</span>)<span class="question-mark">?</span>; 
+<span class="macro">assert_ct_eq</span><span class="macro">!</span>(<span class="ident">blob</span>, <span class="kw-2">&amp;</span><span class="ident">blob_expected</span>);
 
-<span class="kw">let</span> <span class="ident">plaintext</span> <span class="op">=</span> <span class="ident">GX</span>::<span class="ident">decrypt</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>, <span class="kw-2">&amp;</span><span class="ident">ciphertext</span>, <span class="kw-2">&amp;</span><span class="ident">authentication_tag</span>)<span class="question-mark">?</span>;
-<span class="comment">// The authentication tag is checked during decryption and will return an error if the tags do not match</span>
-<span class="macro">assert_ct_eq</span><span class="macro">!</span>(<span class="ident">plaintext</span>, <span class="kw-2">&amp;</span><span class="ident">p</span>);</pre></div>
+<span class="comment">/*
+ * Decryption likewise is done in one line, passing the key and the blob to be decrypted.
+ * The authentication tag is checked to match the ciphertext
+ * during decryption and will return an error if the tags do not match.
+ * Returns the decrypted plaintext if successful, otherwise an error.
+ */</span>
+<span class="kw">let</span> <span class="ident">decrypted_plaintext</span> <span class="op">=</span> <span class="ident">GX</span>::<span class="ident">decrypt_blob</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="ident">blob</span>)<span class="question-mark">?</span>;
+<span class="macro">assert_ct_eq</span><span class="macro">!</span>(<span class="ident">plaintext</span>, <span class="kw-2">&amp;</span><span class="ident">decrypted_plaintext</span>);</pre></div>
 </div><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
 <table><tr class="module-item"><td><a class="mod" href="e/index.html" title="arx_kw::e mod">e</a></td><td class="docblock-short"><p>Module containing items related to the ARX-KW-8-2-4-E variant</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="ex/index.html" title="arx_kw::ex mod">ex</a></td><td class="docblock-short"><p>Module containing items related to the ARX-KW-8-2-4-EX variant</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="g/index.html" title="arx_kw::g mod">g</a></td><td class="docblock-short"><p>Module containing items related to the ARX-KW-8-2-4-G variant</p>
 </td></tr><tr class="module-item"><td><a class="mod" href="gx/index.html" title="arx_kw::gx mod">gx</a></td><td class="docblock-short"><p>Module containing items related to the ARX-KW-8-2-4-GX variant</p>
 </td></tr></table><h2 id="macros" class="section-header"><a href="#macros">Macros</a></h2>
-<table><tr class="module-item"><td><a class="macro" href="macro.assert_ct_eq.html" title="arx_kw::assert_ct_eq macro">assert_ct_eq</a></td><td class="docblock-short"><p>Macro which provides an equivalent of <code>assert_eq</code> in constant time using the <code>ConstantTimeEq</code>
+<table><tr class="module-item"><td><a class="macro" href="macro.assert_ct_eq.html" title="arx_kw::assert_ct_eq macro">assert_ct_eq</a></td><td class="docblock-short"><p>Macro which provides an equivalent of <a href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html" title="assert_eq"><code>assert_eq</code></a> in constant time using the <a href="../arx_kw/trait.ConstantTimeEq.html" title="ConstantTimeEq"><code>ConstantTimeEq</code></a>
 trait. Accordingly, ConstantTimeEq must be in scope and implemented on the types of $x and $y
-for this to work. It is implemented for <code>AuthTag</code></p>
+for this to work. It is implemented for <a href="../arx_kw/struct.AuthTag.html" title="AuthTag"><code>AuthTag</code></a> and many primitives.</p>
 </td></tr></table><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
 <table><tr class="module-item"><td><a class="struct" href="struct.AuthTag.html" title="arx_kw::AuthTag struct">AuthTag</a></td><td class="docblock-short"><p>The type used as the authentication tag (unencrypted data to be stored alongside encrypted keys) 
 This is the same for all variants at time of writing (a single, static 128 bits), making
@@ -101,7 +148,7 @@ for a 50% storage overhead for a 256-bit key like those used for <code>ChaCha</c
 </td></tr></table><h2 id="enums" class="section-header"><a href="#enums">Enums</a></h2>
 <table><tr class="module-item"><td><a class="enum" href="enum.ArxKwError.html" title="arx_kw::ArxKwError enum">ArxKwError</a></td><td class="docblock-short"><p>The error type used by this crate.</p>
 </td></tr><tr class="module-item"><td><a class="enum" href="enum.InvalidLengthError.html" title="arx_kw::InvalidLengthError enum">InvalidLengthError</a></td><td class="docblock-short"><p>An error denoting that a value was of an invalid length. Typically this will be used as a
-variant of <code>ArxKwError</code> rather than on its own.</p>
+variant of <a href="../arx_kw/enum.ArxKwError.html" title="ArxKwError"><code>ArxKwError</code></a> rather than on its own.</p>
 </td></tr></table><h2 id="traits" class="section-header"><a href="#traits">Traits</a></h2>
 <table><tr class="module-item"><td><a class="trait" href="trait.ArxKW.html" title="arx_kw::ArxKW trait">ArxKW</a></td><td class="docblock-short"><p>Provides encryption and decryption capabilites</p>
 </td></tr><tr class="module-item"><td><a class="trait" href="trait.ConstantTimeEq.html" title="arx_kw::ConstantTimeEq trait">ConstantTimeEq</a></td><td class="docblock-short"><p>An <code>Eq</code>-like trait that produces a <code>Choice</code> instead of a <code>bool</code>.</p>
