@@ -9,7 +9,7 @@ use crate::{
 };
 
 /// The ARX-8-2-4-E variant. Has a key length of 48 bytes and a maximum input length of 64 bytes.
-/// See the `ArxKW` trait for usage.
+/// See the [`ArxKW`] trait for usage.
 pub struct E;
 impl E {
     #[must_use]
@@ -90,17 +90,40 @@ mod tests {
         assert_ct_eq!(t, &t_expected);
         Ok(())
     }
+
+    #[test]
+    fn test_encrypt_blob() -> Result<()> {
+        let k = <[u8; 48]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f")?;
+        let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+        let blob_expected = <[u8; 48]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2fe6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1")?;
+        let blob = E::encrypt_blob(&k, &p)?;
+        assert_ct_eq!(blob, &blob_expected);
+        Ok(())
+    }
+
+
     #[test]
     fn test_decrypt() -> Result<()> {
-
         let c = <[u8; 32]>::from_hex("e6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1")?;
         let k = <[u8; 48]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f")?;
         let t = AuthTag(<[u8; 16]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f")?);
         let p_expected = <[u8;32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
         let p = E::decrypt(&k, &c, &t)?;
-        assert_eq!(p, p_expected);
+        assert_ct_eq!(p, &p_expected);
         Ok(())
     }
+
+
+    #[test]
+    fn test_decrypt_blob() -> Result<()> {
+        let k = <[u8; 48]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f")?;
+        let blob = <[u8; 48]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2fe6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1")?;
+        let p_expected = <[u8;32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+        let p = E::decrypt_blob(&k, &blob)?;
+        assert_ct_eq!(p, &p_expected);
+        Ok(())
+    }
+
 
     #[test]
     fn test_decrypt_bad() -> Result<()> {

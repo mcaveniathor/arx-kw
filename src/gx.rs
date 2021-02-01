@@ -3,7 +3,7 @@ use crate::{util,generate,ArxKW,ArxKwError,AuthTag};
 use crate::ConstantTimeEq;
 
 /// The ARX-8-2-4-GX variant. Has a key length of 32 bytes and no maximum input length. 
-/// See the `ArxKW` trait for usage.
+/// See the [`ArxKW`] trait for usage.
 pub struct GX;
 impl GX {
     /// The length in bytes of the secret key used by this variant of ARX-KW
@@ -121,10 +121,29 @@ mod tests {
         let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
         let t_expected = AuthTag(<[u8; 16]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65")?);
         let c_expected = <[u8; 32]>::from_hex("2f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?;
-        println!("{}","2f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3".len());
         let (c,t) = GX::encrypt(&k, &p)?;
         assert_eq!(&c.to_vec(), &c_expected);
         assert_ct_eq!(t, &t_expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_encrypt_blob() -> Result<()> {
+        let k = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
+        let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+        let blob_expected = <[u8; 48]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?;
+        let blob = GX::encrypt_blob(&k, &p)?;
+        assert_ct_eq!(blob, &blob_expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_decrypt_blob() -> Result<()> {
+        let k = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
+        let p_expected = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+        let blob= <[u8; 48]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?;
+        let p = GX::decrypt_blob(&k, &blob)?;
+        assert_ct_eq!(&p, &p_expected);
         Ok(())
     }
 

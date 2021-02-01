@@ -10,7 +10,7 @@ use crate::{
 };
 
 /// The ARX-8-2-4-G variant. Has a key length of 32 bytes and a maximum input length of 64 bytes.
-/// See the `ArxKW` trait for usage.
+/// See the [`ArxKW`] trait for usage.
 pub struct G;
 impl G {
     /// The length of the secret key used by this variant of ARX-KW, in bytes
@@ -85,6 +85,26 @@ mod tests {
         let (c,t) = G::encrypt(&k,&p)?;
         assert_ct_eq!(c, &c_expected);
         assert_ct_eq!(t, &t_expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_encrypt_blob() -> Result<()> {
+        let k = <[u8;32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
+        let p = <[u8;32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+        let blob_expected = <[u8;48]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65f63830f5148a039b6aacc4b9b6bc281d7704d906e4b5d91e045a62cdfc25eb10")?;
+        let blob = G::encrypt_blob(&k, &p)?;
+        assert_ct_eq!(blob_expected, &blob);
+        Ok(())
+    }
+
+    #[test]
+    fn test_decrypt_blob() -> Result<()> {
+        let k = <[u8;32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?;
+        let p_expected = <[u8;32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+        let blob = <[u8;48]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc65f63830f5148a039b6aacc4b9b6bc281d7704d906e4b5d91e045a62cdfc25eb10")?;
+        let p = G::decrypt_blob(&k, &blob)?;
+        assert_ct_eq!(p, &p_expected);
         Ok(())
     }
 

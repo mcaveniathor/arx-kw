@@ -3,7 +3,7 @@ use crate::{util,ArxKW,ArxKwError,AuthTag,ConstantTimeEq};
 
 /// A user-friendly implementation of ARX-KW-8-2-4-EX. Has a key length of 48 bytes and no maximum
 /// input length.
-/// See the `ArxKW` trait for usage.
+/// See the [`ArxKW`] trait for usage.
 pub struct EX {}
 impl EX {
     /// The length in bytes of the secret key used by this variant of ARX-KW
@@ -124,6 +124,26 @@ mod tests {
         let (c,t) = EX::encrypt(array_ref![k,0,48], &p)?;
         assert_eq!(&c.to_vec(), &c_expected);
         assert_ct_eq!(&t, &t_expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_encrypt_blob() -> Result<()> {
+        let k = <[u8; 48]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f")?;
+        let p = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+        let blob_expected = <[u8;48]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f02a55ab1d7f549db160e8ecb33e1c6d65a05d0ebaba54dc0712285787c8a62db")?;
+        let blob = EX::encrypt_blob(&k, &p)?;
+        assert_ct_eq!(blob, &blob_expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_decrypt_blob() -> Result<()> {
+        let blob = <[u8;48]>::from_hex("c4f21d3b4dbcc566c3a73bbc59790f2f02a55ab1d7f549db160e8ecb33e1c6d65a05d0ebaba54dc0712285787c8a62db")?;
+        let k = <[u8; 48]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f")?;
+        let p_expected = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?;
+        let p = EX::decrypt_blob(&k, &blob)?;
+        assert_ct_eq!(p, &p_expected);
         Ok(())
     }
 
