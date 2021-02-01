@@ -12,6 +12,8 @@
 
 This library features Rust implementations of the ARX-KW family of novel [Key Wrap](https://wikipedia.org/wiki/Key_Wrap) constructions.
 
+The version number for this crate will be incremented in compliance with [Semantic Versioning](https://semver.org/). 
+
 ---
 
 # Background
@@ -42,7 +44,7 @@ Use the `nightly` feature to enable SIMD parallelization of the ChaCha computati
 
 ```
 [dependencies]
-arx-kw = {version = "0.2", features = ["nightly"]}
+arx-kw = {version = "0.3", features = ["nightly"]}
 ```
 #### Variants
 
@@ -54,7 +56,7 @@ the `gx::GX` variant:
 
 ```toml
 [dependencies]
-arx-kw = { version = "0.2", default-features=false, features=["gx"] }
+arx-kw = { version = "0.3", default-features=false, features=["gx"] }
 ```
 
 

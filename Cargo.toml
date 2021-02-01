@@ -1,6 +1,6 @@
 [package]
 name = "arx-kw"
-version = "0.2.13"
+version = "0.3.0"
 authors = ["Thor McAvenia <mcaveniathor@gmail.com>"]
 edition = "2018"
 license = "MIT"
