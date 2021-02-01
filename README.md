@@ -28,7 +28,7 @@ a block counter or having a substantial storage overhead in order to manage the 
 statelessly.
 
 ARX-KW has a static overhead of 128 bits for each of its four variants without the need to keep
-state for the nonce used by ChaCha, making the storage overhead only 50% for a 256-bit key
+state for the nonce used by ChaCha, making the storage overhead only 50% for a 256-bit key.
 
 ---
 
