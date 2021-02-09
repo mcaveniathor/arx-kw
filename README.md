@@ -42,7 +42,7 @@ Use the `nightly` feature to enable SIMD parallelization of the ChaCha computati
 
 *Cargo.toml*
 
-```
+```toml
 [dependencies]
 arx-kw = {version = "0.3", features = ["nightly"]}
 ```
