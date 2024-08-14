@@ -22,7 +22,7 @@ default = ["e", "g", "gx", "ex"]
 
 [dependencies]
 chacha = "0.3.0"
-siphasher = "0.3.3"
+siphasher = "1.0.1"
 byteorder = "1.4.2"
 arrayref = "0.3.6"
 thiserror = "1.0.23"
