@@ -17,3 +17,9 @@ Cargo.lock
 !site/Cargo.lock
 /dev/__pycache__/
 /dev/tests/__pycache__/
+
+# Instrumented fuzzing keeps its own dependency lock; findings stay local.
+/fuzz/target/
+/fuzz/corpus/
+/fuzz/artifacts/
+!fuzz/Cargo.lock

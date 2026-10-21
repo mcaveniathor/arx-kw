@@ -24,8 +24,8 @@ def check(features):
     actual = packages & OPTIONAL
     if actual != expected:
         raise AssertionError(f"{features}: expected {expected}, resolved {actual}")
-    if "getrandom" in packages:
-        raise AssertionError(f"{features}: example randomness leaked into runtime dependencies")
+    if packages & {"getrandom", "proptest", "libfuzzer-sys"}:
+        raise AssertionError(f"{features}: development dependency leaked into runtime dependencies")
     if variant:
         cipher_features = tree(features, "--edges", "normal,features", "--invert", "chacha20")
         xchacha = 'feature "xchacha"' in cipher_features

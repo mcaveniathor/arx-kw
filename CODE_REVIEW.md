@@ -84,3 +84,54 @@ entries, dirty/wrong source archives, registry mismatches, and non-404 network
 failures. Both library and website dependency audits pass locally. Hosted
 Linux/macOS/Windows CI, Pages deployment, and crates.io OIDC authorization
 remain unexecuted here; their required service settings are in RELEASE.md.
+
+## 0.5.0 examples and feature selection
+
+The follow-up change keeps the existing cipher, SipHash, KDF, and envelope
+formats intact. Blob parsing copies the bounded tag directly so the shared
+trait no longer needs `arrayref` without a built-in variant. Cipher and array
+helpers follow variant features; HMAC/SHA-256 and envelope methods/constants
+follow default-enabled `envelope`. Zeroization and constant-time comparison
+remain mandatory. Explicitly reduced-feature consumers must opt into envelope
+APIs, so this change uses a new breaking version.
+
+The three runnable examples obtain wrapping and data keys from OS randomness,
+propagate entropy errors, retain plaintext in zeroizing storage, and avoid
+printing secrets. They verify context rejection, key rotation, and detached-tag
+tampering. The examples demonstrate wrapping operations, not durable key
+storage or transactional rotation.
+
+Checks cover raw and envelope variants, envelope-only and no-feature builds,
+actual runtime dependency graphs, MSRV, documentation, and example execution
+across the CI platforms. This implementation review does not constitute an
+independent cryptographic audit.
+
+## 0.5.0 compatibility and malformed-input hardening
+
+Sixteen frozen envelope v1 vectors were obtained from the checksum-verified
+published 0.4.0 crate. They cover each variant, empty and binary contexts, and
+0/1/32/64-byte plaintexts. The new release reproduces every byte and opens each
+old envelope. Provenance and fixture construction are in tests/vectors/README.md.
+These fixtures preserve compatibility; they are not an independent cryptographic
+oracle for the envelope construction.
+
+Proptest exercises arbitrary keys, messages, contexts, wrong keys/contexts,
+single-bit mutations, truncations, determinism, and malformed blobs/envelopes.
+Separate deterministic checks cover maximum and oversized EX/GX payloads.
+The full suite now has 59 tests (28 unit, 23 integration, 8 documentation),
+passing on Rust 1.99.1 and 1.88.0. A further run with 2048 generated cases per
+variant (seed 20261021) passed. Raw/envelope variants, envelope-only and
+no-feature builds, strict Clippy, ten dependency graphs, six release-helper
+checks, and the nine-page/136-link site check pass.
+
+Two libFuzzer targets share the property assertions and use the frozen vectors
+as seeds. Local runs with cargo-fuzz 0.13.2 and Rust nightly 2026-10-21, coverage
+instrumentation, and AddressSanitizer completed without findings: 623974
+malformed-input executions and 129759 round-trip executions, each in 46 seconds.
+CI runs bounded 30-second smoke checks per target. These short runs are not an
+exhaustive fuzz campaign or a timing/cryptographic proof. The separate fuzz
+workspace and Proptest are absent from library runtime dependency graphs.
+Root and fuzz lockfile advisory scans reported no known vulnerabilities.
+
+SECURITY.md records the private reporting channel, latest-stable support policy,
+and replay/rollback and audit limitations. No primitive or format changed.

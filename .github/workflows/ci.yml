@@ -88,6 +88,7 @@ jobs:
             site -> target
       - run: cargo generate-lockfile
       - run: cargo fmt --check
+      - run: cargo fmt --manifest-path fuzz/Cargo.toml --check
       - run: cargo fmt --manifest-path site/Cargo.toml --check
       - run: cargo clippy --all-targets --all-features --locked -- -D warnings
       - run: cargo clippy --all-targets --no-default-features --locked -- -D warnings
@@ -123,3 +124,30 @@ jobs:
           mkdir -p target/pages/doc
           cp -R target/doc/. target/pages/doc/
           python dev/check-site.py target/pages --base /arx-kw/
+
+  fuzz:
+    name: Instrumented fuzz smoke checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
+        with:
+          toolchain: nightly-2026-10-21
+          components: rust-src
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          workspaces: fuzz -> target
+          key: fuzz-nightly-2026-10-21
+      - run: cargo install cargo-fuzz --version 0.13.2 --locked
+      - run: cargo fetch --manifest-path fuzz/Cargo.toml --locked
+      - run: python dev/seed-fuzz.py
+      - name: Exercise malformed input and authenticated round trips
+        env:
+          CARGO_NET_OFFLINE: true
+        run: |
+          cargo fuzz run envelope -- -max_total_time=30 -max_len=8192 -timeout=10 -rss_limit_mb=2048
+          cargo fuzz run round_trip -- -max_total_time=30 -max_len=8192 -timeout=10 -rss_limit_mb=2048
+          git diff --exit-code -- fuzz/Cargo.lock
