@@ -4,6 +4,13 @@ Rust implementations of the ARX-KW-8-2-4 key-wrap constructions from
 [Satō Shinichi's paper](https://ia.cr/2020/059). These combine SipHash-2-4
 with 128-bit output and ChaCha8 or XChaCha8 to wrap secret key material.
 
+[Project website](https://mcaveniathor.github.io/arx-kw/) ·
+[API reference](https://docs.rs/arx-kw) · [Changelog](https://github.com/mcaveniathor/arx-kw/blob/main/CHANGELOG.md)
+
+Version 0.4.0 is a release candidate and has not been published to crates.io.
+The `0.4` dependency examples below apply after publication. Until then, build
+from this checkout or use `arx-kw = { path = "../arx-kw" }` in a local project.
+
 ## Security and input limits
 
 ARX-KW is deterministic: the same key and plaintext produce the same output.
@@ -159,6 +166,9 @@ provide `VARIANT_ID` and key types supporting `Copy`, `Zeroize`, `AsRef`, and
 `AsMut`. New errors cover allocation, context, and envelope validation failures. The old `nightly` SIMD feature has been
 removed because the upstream implementation relies on obsolete compiler SIMD
 interfaces; the supported workflow uses stable Rust.
+
+For the Stucco website build and deployment, see [Website development](https://github.com/mcaveniathor/arx-kw/blob/main/site/README.md).
+See the [Release guide](https://github.com/mcaveniathor/arx-kw/blob/main/RELEASE.md) for automated verification and publishing.
 
 ## References and license
 

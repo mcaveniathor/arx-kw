@@ -11,3 +11,9 @@ Cargo.lock
 
 
 */.nvimlog
+
+# Documentation generator has its own locked build dependencies.
+/site/target/
+!site/Cargo.lock
+/dev/__pycache__/
+/dev/tests/__pycache__/

@@ -1,0 +1,14 @@
+[package]
+name = "arx-kw-site"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+publish = false
+license = "MIT"
+
+# Keep website tooling out of the cryptography library's dependency graph.
+[workspace]
+
+[dependencies]
+stucco = "=0.5.0"
+pulldown-cmark = { version = "0.13", default-features = false, features = ["html"] }

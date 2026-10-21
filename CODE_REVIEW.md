@@ -68,3 +68,19 @@ library cannot erase borrowed caller inputs. Callers must avoid copying secrets
 and manage the lifetime of raw arrays and legacy returned vectors; prefer the
 new secret ownership and envelope APIs. These are explicit ownership and
 assurance boundaries, not guarantees that can be established by unit tests.
+
+## Documentation and automation follow-up
+
+The Stucco site is a separate, locked build crate, excluded from the published
+library and its runtime dependency graph. Local validation covers nine
+rendered pages, 130 internal links/assets, both root and project URL prefixes,
+and 36 desktop/mobile/light/dark browser cases. Automated WCAG A/AA checks
+report no violations in those cases; keyboard navigation also works with
+JavaScript disabled. This is not a full accessibility certification.
+
+The updated workflows are validated with checksum-verified actionlint 1.7.12.
+Six release-helper tests exercise wrong tags/crate names, missing changelog
+entries, dirty/wrong source archives, registry mismatches, and non-404 network
+failures. Both library and website dependency audits pass locally. Hosted
+Linux/macOS/Windows CI, Pages deployment, and crates.io OIDC authorization
+remain unexecuted here; their required service settings are in RELEASE.md.

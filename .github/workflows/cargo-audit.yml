@@ -1,15 +1,11 @@
-name: Security audit
+name: Dependency audit
+
 on:
   push:
-    paths:
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
-      - '.github/workflows/cargo-audit.yml'
+    branches: [main]
+    paths: ['**/Cargo.toml', '**/Cargo.lock', '.github/workflows/cargo-audit.yml']
   pull_request:
-    paths:
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
-      - '.github/workflows/cargo-audit.yml'
+    paths: ['**/Cargo.toml', '**/Cargo.lock', '.github/workflows/cargo-audit.yml']
   schedule:
     - cron: '0 8 * * 1'
   workflow_dispatch:
@@ -17,12 +13,21 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: audit-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  security_audit:
+  audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - run: cargo generate-lockfile
-      - run: cargo install cargo-audit --locked
+      - run: cargo install cargo-audit --version 0.22.2 --locked
       - run: cargo audit
+      - run: cargo audit --file site/Cargo.lock

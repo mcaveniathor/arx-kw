@@ -1,62 +1,132 @@
-# Release 0.4.0
+# Releasing ARX-KW
 
-Prepared on branch `release/0.4.0`. This is a breaking release from 0.3.2;
-review CHANGELOG.md and the README migration section before publishing.
-Version 0.4.0 was not present on crates.io during preparation.
+Version 0.4.0 is a breaking release from 0.3.2. Review the changelog, README
+migration section, and implementation review before tagging it. Release
+preparation does not publish a crate or push a tag.
 
-## Release contents
+## One-time repository setup
 
-- Updates dependencies, docs, CI, malformed-input handling, and error privacy.
-- Removes private-layout casts and the legacy runtime cipher provider.
-- Adds bounded/fallible output allocation and owned secret-memory handling.
-- Adds versioned, context-bound envelopes while preserving legacy paper vectors.
-- Requires Rust 1.88 and removes the obsolete `nightly` feature.
+1. In GitHub repository settings, select **GitHub Actions** as the Pages source.
+   The Pages workflow publishes the Stucco site; the legacy `gh-pages` branch
+   remains intact and is no longer the source. If the existing `github-pages`
+   environment restricts deployment branches, allow `main`.
+2. Create a GitHub Actions environment named `crates-io`. Configure any required
+   reviewers there to control when the publication job may start.
+3. In the crate's crates.io settings, add a **GitHub trusted publisher** with:
 
-## Reproduce validation
+   | Setting | Value |
+   | --- | --- |
+   | Repository owner | `mcaveniathor` |
+   | Repository | `arx-kw` |
+   | Workflow filename | `release.yml` |
+   | Environment | `crates-io` |
 
-From the checkout, activate the installed tools:
+   Use the exact filename and environment name. The official
+   `rust-lang/crates-io-auth-action` exchanges GitHub's OIDC identity for a
+   temporary registry token and revokes it after the job. No stored
+   `CARGO_REGISTRY_TOKEN` secret is required. See
+   [crates.io trusted publishing](https://crates.io/docs/trusted-publishing).
+
+GitHub Pages and crates.io configuration are external prerequisites. Committing
+the workflow files does not enable or validate either service configuration.
+
+## CI and pre-release checks
+
+CI tests stable Rust and the minimum supported Rust 1.88 on Linux, macOS, and
+Windows. Linux jobs check feature combinations, benchmark smoke tests, strict
+Clippy, formatting, workflow syntax, release guardrails, and the built Stucco
+site with its generated API reference. A separate weekly dependency audit
+checks both the library and website lockfiles. All external actions are pinned
+to immutable commits, annotated with their versions.
+
+The library intentionally ignores Cargo.lock to exercise current dependency
+resolution. CI generates a lockfile and uses `--locked` for subsequent steps.
+The site's lockfile is committed because it is a private build tool.
+
+From the checkout, using an installed Rust toolchain and Python 3.11 or newer:
 
 ```sh
-export CARGO_HOME=/workspace/.cargo RUSTUP_HOME=/workspace/.rustup
-export PATH="$CARGO_HOME/bin:$PATH"
-cargo +1.99.1 fmt --check
-cargo +1.99.1 clippy --all-targets --all-features --locked -- -D warnings
-cargo +1.99.1 test --all-features --locked
+cargo generate-lockfile
+cargo fmt --check
+cargo fmt --manifest-path site/Cargo.toml --check
+cargo clippy --all-targets --all-features --locked -- -D warnings
+cargo clippy --all-targets --no-default-features --locked -- -D warnings
+cargo clippy --manifest-path site/Cargo.toml --locked -- -D warnings
+cargo test --all-features --locked
 cargo +1.88.0 test --all-features --locked
 for feature in e g ex gx; do
-  cargo +1.99.1 test --no-default-features --features "$feature" --locked || exit $?
+  cargo test --no-default-features --features "$feature" --locked || exit $?
 done
-cargo +1.99.1 test --no-default-features --locked
-cargo +1.99.1 bench --all-features --locked -- --test
-RUSTDOCFLAGS='-D warnings' cargo +1.99.1 doc --no-deps --all-features --locked
+cargo test --no-default-features --locked
+cargo bench --all-features --locked -- --test
+python -B -m unittest discover -s dev/tests -v
+cargo run --manifest-path site/Cargo.toml --locked -- target/pages --base /arx-kw/
+RUSTDOCFLAGS='-D warnings' cargo doc --no-deps --all-features --locked
+cp -R target/doc target/pages/doc
+python dev/check-site.py target/pages --base /arx-kw/
 cargo audit
-cargo +1.99.1 publish --dry-run --locked
+cargo audit --file site/Cargo.lock
 ```
 
-The library intentionally ignores Cargo.lock in Git. The prepared workspace
-retains its resolved lockfile; a fresh clone must first generate one. Hosted CI
-resolves current dependencies to test consumer compatibility. Do not disable
-package integrity checks or skip the verification build.
+Install cargo-audit with `cargo install cargo-audit --version 0.22.2 --locked`.
+Install the checksum-verified workflow linter with
+`python dev/install-actionlint.py /tmp/actionlint`, then run `/tmp/actionlint`.
+The installer supports Linux x86-64, matching CI's lint runner.
+Do not bypass package verification or artifact checksums.
 
-## Publication
+Release jobs pin Rust/Cargo 1.99.1 in both verification and publication so
+archive reproduction is unaffected by a later stable-toolchain update during
+an environment approval. CI continues to test current stable Rust and the MSRV.
 
-The preparation task does not push, tag, publish, or change registry ownership.
-After reviewing the release commit and passing hosted CI, publish from this
-branch with a crates.io account authorized for this crate:
+## Tag and publish
 
-```sh
-cargo +1.99.1 publish --locked
-```
+1. Update `Cargo.toml`, changelog, release status in the README, and landing-page
+   version label together. Finalize the release notes and any unreleased label.
+2. Merge the reviewed changes into `main` and wait for CI to pass. The release
+   workflow requires a successful push-triggered main CI run for that exact
+   commit and rejects tags outside `main` history.
+3. Create and push the matching version tag when publication is intended:
 
-Create/push the release tag and GitHub release only after the registry accepts
-the package. Keep the release notes aligned with CHANGELOG.md. Enter registry
-credentials through the normal secure credential mechanism; do not store them
-in repository files or logs.
+   ```sh
+   git switch main
+   git pull --ff-only
+   git tag -a v0.4.0 -m 'Release 0.4.0'
+   git push origin v0.4.0
+   ```
+
+Pushing the tag starts `.github/workflows/release.yml`:
+
+- **Verify:** check tag/version equality, main ancestry, successful CI, clean source, tests,
+  MSRV, linting, site links, and both dependency audits. Run a registry publish
+  dry run; verify the archive's version and clean VCS commit; record SHA-256
+  and changelog release notes.
+- **Publish:** download the verified archive and lockfile, rebuild the package,
+  and compare it byte for byte before obtaining registry credentials. Then
+  authenticate through trusted publishing and publish with the same lockfile.
+- **GitHub release:** only after registry publication succeeds, create the
+  release and attach the verified `.crate` and `SHA256SUMS`. Cargo versions
+  with a prerelease suffix produce a GitHub prerelease.
+
+The verified package and lockfile are also retained as a workflow artifact for
+14 days. The source archive includes the lockfile but excludes website and CI
+build tooling from the published library.
+
+## Retry and failure handling
+
+Correct an external configuration failure and use **Re-run failed jobs**. The
+manual workflow can also be dispatched against the same tag, never against a
+branch. An already published registry version is accepted only if its downloaded
+archive has exactly the verified SHA-256; a different archive aborts the run.
+GitHub release attachments can be retried after a successful registry publish.
+
+A crates.io upload cannot be undone by deleting a GitHub release or tag. Never
+move a published version tag to different source, or change expected checksums
+to force a retry. Fix source problems in a new patch release.
 
 ## Assurance scope
 
 Implementation and compatibility tests do not replace an independent audit of
-the construction, the new envelope protocol, or its implementation. Zeroization
-covers owned buffers and state, not every possible compiler/register/provider
-copy or caller-owned data. A formal constant-time proof and an independent
-cryptographic audit require separate expert review; neither is claimed here.
+the construction, envelope protocol, or implementation. Zeroization covers
+owned buffers and state, not every compiler/register/provider copy or
+caller-owned data. Neither a formal constant-time proof nor an independent
+cryptographic audit is claimed by release automation.

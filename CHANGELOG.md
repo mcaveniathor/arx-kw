@@ -21,8 +21,8 @@
 - Share the README with crate documentation; document key lengths, stream limits,
   blob encoding, migration, and secret-memory limitations.
 
-The four published paper test vectors retain their original outputs. This
-release has not been published by the maintenance task.
+The four published paper test vectors retain their original outputs. Release
+availability is recorded on crates.io and the GitHub Releases page.
 
 ### Additional hardening
 
@@ -40,3 +40,16 @@ release has not been published by the maintenance task.
 
 Independent cryptographic audit and formal whole-program timing/memory-erasure
 assurance are not supplied by this release preparation.
+
+### Documentation and automation
+
+- Replace the Jekyll landing page with a static site generated using Stucco 0.5:
+  responsive layouts, system light/dark themes, shared Markdown sources,
+  anchored navigation, and a generated API reference at the existing URL.
+- Add Linux/macOS/Windows CI for stable Rust and Rust 1.88, locked site builds,
+  workflow validation, dependency audits, and read-only pull-request checks.
+- Pin third-party actions to verified commit SHAs and remove legacy Travis
+  and coverage-uploader configuration.
+- Add a version-tagged release pipeline with package provenance, SHA-256 and
+  byte-for-byte rebuild checks, temporary crates.io OIDC credentials, safe
+  registry retries, and GitHub release assets after publication succeeds.
