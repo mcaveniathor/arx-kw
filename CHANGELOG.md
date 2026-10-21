@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.0 (release candidate)
+## 0.4.0 (2026-10-21)
 
 - Update every direct runtime and development dependency to the latest stable
   release available during the maintenance review.

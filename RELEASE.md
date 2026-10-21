@@ -107,7 +107,9 @@ Pushing the tag starts `.github/workflows/release.yml`:
 - **Provenance:** pass the verified crate's SHA-256 to the isolated upstream
   SLSA generator. Sign keylessly using GitHub OIDC and record the signing event
   in Sigstore's public transparency log. This job has no registry credentials
-  and does not create a GitHub release.
+  and does not create a GitHub release. GitHub requires the caller to grant
+  `contents: write` because the reusable workflow declares an optional upload
+  job, even though `upload-assets: false` keeps that job disabled.
 - **Publish:** download the verified archive, lockfile, and signed provenance.
   Verify the artifact digest, source repository, exact version tag, and trusted
   generator identity using `slsa-verifier`. Rebuild the package and compare it
