@@ -62,8 +62,10 @@ cargo test --no-default-features --locked
 cargo bench --all-features --locked -- --test
 python -B -m unittest discover -s dev/tests -v
 cargo run --manifest-path site/Cargo.toml --locked -- target/pages --base /arx-kw/
+cargo clean --doc
 RUSTDOCFLAGS='-D warnings' cargo doc --no-deps --all-features --locked
-cp -R target/doc target/pages/doc
+mkdir -p target/pages/doc
+cp -R target/doc/. target/pages/doc/
 python dev/check-site.py target/pages --base /arx-kw/
 cargo audit
 cargo audit --file site/Cargo.lock
