@@ -1,0 +1,4 @@
+    Updating crates.io index
+     Locking 30 packages to highest Rust 1.99.1 compatible versions
+    Checking recipe-rotate-key v0.0.0 (/workspace/arx-kw/guidance/arx-kw-0.5.0/.bundle-stage-FkiHJ6/verification/rotate-key)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s

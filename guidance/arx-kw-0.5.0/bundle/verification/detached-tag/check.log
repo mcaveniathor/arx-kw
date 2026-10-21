@@ -1,0 +1,8 @@
+    Updating crates.io index
+     Locking 24 packages to highest Rust 1.99.1 compatible versions
+    Checking block-buffer v0.12.1
+    Checking cipher v0.5.2
+    Checking chacha20 v0.10.2
+    Checking arx-kw v0.5.0
+    Checking recipe-detached-tag v0.0.0 (/workspace/arx-kw/guidance/arx-kw-0.5.0/.bundle-stage-FkiHJ6/verification/detached-tag)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.62s

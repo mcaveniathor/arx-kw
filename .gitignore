@@ -23,3 +23,8 @@ Cargo.lock
 /fuzz/corpus/
 /fuzz/artifacts/
 !fuzz/Cargo.lock
+
+# Guidance keeps frozen evidence and consumer lockfiles, not build/runtime paths.
+/guidance/**/bundle/plugin/
+/guidance/**/target/
+!guidance/**/Cargo.lock

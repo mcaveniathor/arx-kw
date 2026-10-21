@@ -188,6 +188,14 @@ stable contexts, and commit rotations transactionally. Detached storage needs
 a dedicated key for protocol separation because it has no context field.
 See the [example source programs](https://github.com/mcaveniathor/arx-kw/tree/v0.5.0/examples).
 
+## Release-specific recipes and tooling
+
+[Symposiast guidance for 0.5.0](https://github.com/mcaveniathor/arx-kw/blob/main/guidance/README.md)
+provides compiled consumer recipes for tenant-bound wrapping, key rotation, and
+detached-tag storage, with minimal features and frozen source citations. It includes
+a portable Symposium skill and a full bundle for MCP retrieval and version checks.
+Generation and validation tooling is development-only and excluded from the crate.
+
 ## Development
 
 ```sh

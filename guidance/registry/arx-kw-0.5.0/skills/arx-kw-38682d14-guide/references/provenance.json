@@ -1,0 +1,432 @@
+{
+  "bundle_sha256": "1fc12f49977f8088872fd1000a3de2e4409e06944d0c0ec229e0ceae282c4202",
+  "example_coverage": [
+    {
+      "disposition": "skipped",
+      "example_id": "doc-403dabee035e1211-1",
+      "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "supporting",
+      "example_id": "doc-403dabee035e1211-2",
+      "reason": "The envelope API and SecretKey ownership pattern support both runnable GX recipes; the recipes use OS randomness instead of fixture keys.",
+      "recipe_ids": [
+        "wrap-key",
+        "rotate-key"
+      ]
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-0cc6763a3698d320-3",
+      "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-0cc6763a3698d320-4",
+      "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-087a7de4d36a294e-5",
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-087a7de4d36a294e-6",
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-37e1ff775b0df319-7",
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-37e1ff775b0df319-8",
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence.",
+      "recipe_ids": []
+    }
+  ],
+  "example_inventory": {
+    "examples": [
+      {
+        "citation": {
+          "end_line": 127,
+          "source_id": "e0003",
+          "start_line": 106
+        },
+        "code": "# #[cfg(feature = \"gx\")]\n# fn main() -> Result<(), Box<dyn std::error::Error>> {\nuse arx_kw::{gx::GX, ArxKW};\nuse hex::FromHex;\n\nlet key = <[u8; 32]>::from_hex(\n    \"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f\",\n)?;\nlet plaintext = <[u8; 32]>::from_hex(\n    \"deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef\",\n)?;\nlet expected = hex::decode(\n    \"016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3\",\n)?;\nlet blob = GX::encrypt_blob(&key, &plaintext)?;\nassert_eq!(blob, expected);\nassert_eq!(GX::decrypt_blob(&key, &blob)?, plaintext);\n# Ok(())\n# }\n# #[cfg(not(feature = \"gx\"))] fn main() {}\n",
+        "id": "doc-403dabee035e1211-1",
+        "info": "rust"
+      },
+      {
+        "citation": {
+          "end_line": 152,
+          "source_id": "e0003",
+          "start_line": 139
+        },
+        "code": "# #[cfg(all(feature = \"gx\", feature = \"envelope\"))]\n# fn main() -> Result<(), arx_kw::ArxKwError> {\nuse arx_kw::{gx::GX, ArxKW, SecretKey};\nlet key = SecretKey::new([0x42; 32]); // Test fixture only.\nlet context = b\"example.com/key-storage/v1\";\nlet envelope = GX::encrypt_envelope(&key, b\"example key material\", context)?;\nlet plaintext = GX::decrypt_envelope(&key, &envelope, context)?;\nassert_eq!(plaintext.as_ref(), b\"example key material\");\n// `key` and `plaintext` are wiped when they leave scope.\n# Ok(())\n# }\n# #[cfg(not(all(feature = \"gx\", feature = \"envelope\")))] fn main() {}\n",
+        "id": "doc-403dabee035e1211-2",
+        "info": "rust"
+      },
+      {
+        "citation": {
+          "end_line": 229,
+          "source_id": "e0005",
+          "start_line": 212
+        },
+        "code": "# #[cfg(feature = \"gx\")]\n# fn main() -> anyhow::Result<()> {\nuse arx_kw::{ArxKW,gx::GX,assert_ct_eq,ConstantTimeEq};\nextern crate hex;\nuse hex::FromHex;\n# extern crate anyhow;\n\nlet key = <[u8; 32]>::from_hex(\"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f\")?; // The key being used to encrypt the plaintext\nlet plaintext = <[u8; 32]>::from_hex(\"deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef\")?; // The key that we are trying to encrypt, as plaintext\n// The expected output: a \"blob\" consisting of the authentication tag followed by ciphertext. This can be treated as one opaque piece of data when using encrypt_blob and decrypt_blob\nlet blob_expected = <[u8; 48]>::from_hex(\"016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3\")?;   \nlet blob = GX::encrypt_blob(&key, &plaintext)?; // The output of encrypt_blob, a Vec<u8>\nassert_ct_eq!(blob, &blob_expected);\n# Ok(())\n# }\n# #[cfg(not(feature = \"gx\"))] fn main() {}\n",
+        "id": "doc-0cc6763a3698d320-3",
+        "info": ""
+      },
+      {
+        "citation": {
+          "end_line": 277,
+          "source_id": "e0005",
+          "start_line": 261
+        },
+        "code": "# #[cfg(feature = \"e\")]\n# fn main() -> anyhow::Result<()> {\nuse arx_kw::{ArxKW,e::E,assert_ct_eq,ConstantTimeEq};\nextern crate hex;\nuse hex::FromHex;\n# extern crate anyhow;\n\nlet key = <[u8; 48]>::from_hex(\"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f\")?;\nlet blob = <[u8; 48]>::from_hex(\"c4f21d3b4dbcc566c3a73bbc59790f2fe6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1\")?;\nlet plaintext_expected = <[u8;32]>::from_hex(\"deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef\")?;\nlet plaintext = E::decrypt_blob(&key, &blob)?;\nassert_ct_eq!(plaintext, &plaintext_expected);\n# Ok(())\n# }\n# #[cfg(not(feature = \"e\"))] fn main() {}\n",
+        "id": "doc-0cc6763a3698d320-4",
+        "info": ""
+      },
+      {
+        "citation": {
+          "end_line": 69,
+          "source_id": "e0018",
+          "start_line": 58
+        },
+        "code": "# use arx_kw::ex::construct_nonce;\n# use arx_kw::AuthTag;\nlet mut t = AuthTag([0u8; 16]);\nfor i in (0u8..16u8) {\n    t.0[i as usize] = i;\n}\n\nlet nonce = construct_nonce(&t);\nassert_eq!(nonce,\n[0x61,0x72,0x62,0x69,0x74,0x72,0x45,0x58,0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0xb,0xc,0xd,0xe,0xf]);\n",
+        "id": "doc-087a7de4d36a294e-5",
+        "info": ""
+      },
+      {
+        "citation": {
+          "end_line": 90,
+          "source_id": "e0018",
+          "start_line": 72
+        },
+        "code": " extern crate hex;\n# extern crate anyhow;\nuse hex::FromHex;\nuse arx_kw::{\n    ex::construct_nonce,\n    AuthTag,\n    ConstantTimeEq,\n    assert_ct_eq\n};\n\n# fn main() -> anyhow::Result<()> {\nlet authentication_tag = AuthTag(<[u8;16]>::from_hex(\"c4f21d3b4dbcc566c3a73bbc59790f2f\")?);\nlet nonce_expected = <[u8;24]>::from_hex(\"6172626974724558c4f21d3b4dbcc566c3a73bbc59790f2f\")?;\nlet nonce = construct_nonce(&authentication_tag);\nassert_ct_eq!(nonce, &nonce_expected);\nOk(())\n# }\n",
+        "id": "doc-087a7de4d36a294e-6",
+        "info": ""
+      },
+      {
+        "citation": {
+          "end_line": 70,
+          "source_id": "e0024",
+          "start_line": 58
+        },
+        "code": "# use arx_kw::gx::construct_nonce;\n# use arx_kw::AuthTag;\nlet mut t = AuthTag([0u8; 16]);\nfor i in (0u8..16u8) {\n    t.0[i as usize] = i;\n}\n// t contains [0x0, 0x1, 0x2 .. 0xf]\n\nlet nonce = construct_nonce(&t);\nassert_eq!(nonce,\n[0x61,0x72,0x62,0x69,0x74,0x72,0x47,0x58,0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0xb,0xc,0xd,0xe,0xf]);\n",
+        "id": "doc-37e1ff775b0df319-7",
+        "info": ""
+      },
+      {
+        "citation": {
+          "end_line": 88,
+          "source_id": "e0024",
+          "start_line": 72
+        },
+        "code": " extern crate hex;\n# extern crate anyhow;\n use hex::FromHex;\n# use arx_kw::{\n    AuthTag,\n    gx::construct_nonce,\n};\n\n# fn main() -> anyhow::Result<()> {\nlet authentication_tag = AuthTag(<[u8;16]>::from_hex(\"016325cf6a3c4b2e3b039675e1ccbc65\")?);\nlet nonce_expected = <[u8;24]>::from_hex(\"6172626974724758016325cf6a3c4b2e3b039675e1ccbc65\")?;\nlet nonce = construct_nonce(&authentication_tag);\nassert_eq!(nonce,nonce_expected);\n# Ok(())\n# }\n",
+        "id": "doc-37e1ff775b0df319-8",
+        "info": ""
+      }
+    ],
+    "warnings": [
+      "Example coverage is limited to collected Markdown code blocks and literal Rust doc attributes/comments. Unlabelled blocks are treated as Rust only in Rust documentation. Macros, cfg_attr, external includes, and generated documentation are not expanded; standalone example programs are still ordinary evidence.",
+      "e0005:7: nonliteral doc attribute was not expanded."
+    ]
+  },
+  "generator": {
+    "name": "symposiast",
+    "version": "0.1.0"
+  },
+  "recipes": [
+    {
+      "input_sha256": "a7df127e76348ce056c05fb36f88778c030a6bcbaa19f4bfa416b72033c26ac3",
+      "lockfile_path": "lockfiles/wrap-key.lock",
+      "lockfile_sha256": "32d9ba81a9cfd97a592e9becdd9f575d9bd4e398cb18ba6a8dfb2915ac788d29",
+      "recipe_id": "wrap-key",
+      "rustc_version": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "status": "compiled"
+    },
+    {
+      "input_sha256": "e16c0350014735e97c0504d79ba4eb0e1082cde0836e28b02b54e19aa806d438",
+      "lockfile_path": "lockfiles/rotate-key.lock",
+      "lockfile_sha256": "a7bb99d037c1cb2bda53f7615703a3c762001fc162669c4f65cc89b0cf434f80",
+      "recipe_id": "rotate-key",
+      "rustc_version": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "status": "compiled"
+    },
+    {
+      "input_sha256": "ba8d0fa2488ec68b67110037d67212669d5d60144dcfb6c4b151987440b09b08",
+      "lockfile_path": "lockfiles/detached-tag.lock",
+      "lockfile_sha256": "a34b04d03185f44fae4906dda5983ef6b4d4a591ec3e089b87110e2a189290bc",
+      "recipe_id": "detached-tag",
+      "rustc_version": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "status": "compiled"
+    }
+  ],
+  "release": {
+    "checksum": "cbb86bc1a4850f71f13be89e8c20c65b784928b486b02e9babd1db38aea1925a",
+    "collected_at": "1792609233",
+    "features": {
+      "default": [
+        "e",
+        "g",
+        "gx",
+        "ex",
+        "envelope"
+      ],
+      "e": [
+        "dep:chacha20",
+        "dep:arrayref"
+      ],
+      "envelope": [
+        "dep:hmac",
+        "dep:sha2"
+      ],
+      "ex": [
+        "dep:chacha20",
+        "dep:arrayref",
+        "chacha20/xchacha"
+      ],
+      "g": [
+        "dep:chacha20",
+        "dep:arrayref"
+      ],
+      "gx": [
+        "dep:chacha20",
+        "dep:arrayref",
+        "chacha20/xchacha"
+      ]
+    },
+    "name": "arx-kw",
+    "repository": "https://github.com/mcaveniathor/arx-kw",
+    "repository_commit": "9fee6602ffb20a1d50e30615d131031884d5df1e",
+    "rust_version": "1.88",
+    "version": "0.5.0"
+  },
+  "review": null,
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "e0001",
+      "kind": "manifest",
+      "path": "evidence/e0001.txt",
+      "sha256": "54d73626b2289fc65d8d0ee713075bbbbd3609b18f3324ca99adcf7518bf5801",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/Cargo.toml"
+    },
+    {
+      "id": "e0002",
+      "kind": "release_metadata",
+      "path": "evidence/e0002.txt",
+      "sha256": "bbd8b8c40c242b24c9c089d94d1fac09cdbed01410b4792e131c889abf162e33",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/.cargo_vcs_info.json"
+    },
+    {
+      "id": "e0003",
+      "kind": "readme",
+      "path": "evidence/e0003.txt",
+      "sha256": "c4ba1cb24e40cd46ba2e0b85ea597d25caaec350081093185c146e3297001f6d",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/README.md"
+    },
+    {
+      "id": "e0004",
+      "kind": "changelog",
+      "path": "evidence/e0004.txt",
+      "sha256": "d527077573c21af6d5bdec63162cd8270db6c618e97752c0a386384a108a0d8a",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/CHANGELOG.md"
+    },
+    {
+      "id": "e0005",
+      "kind": "api",
+      "path": "evidence/e0005.txt",
+      "sha256": "7153986bdd1845e4eb50745c3f767fe563c4cbac1146a3db8e71e4779116fd7f",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/lib.rs"
+    },
+    {
+      "id": "e0006",
+      "kind": "example",
+      "path": "evidence/e0006.txt",
+      "sha256": "bfe738cf31546c9aa662915c1909035b048d565d175d5dd4927627e29e2c3319",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/examples/detached_tag.rs"
+    },
+    {
+      "id": "e0007",
+      "kind": "documentation",
+      "path": "evidence/e0007.txt",
+      "sha256": "61fbcd128515aa838dfd632901e9cb5ded29b4054b6fd578aaac48fb6312a8f0",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/CODE_REVIEW.md"
+    },
+    {
+      "id": "e0008",
+      "kind": "api",
+      "path": "evidence/e0008.txt",
+      "sha256": "d089a06729728abc2c05ba16883a8640a4f58370891d97787ed3271537c4cf2a",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/e.rs"
+    },
+    {
+      "id": "e0009",
+      "kind": "test",
+      "path": "evidence/e0009.txt",
+      "sha256": "49326229b708db7cce83a2850459ac2b2797e25d45059bde21049d94c63d89db",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/boundaries.rs"
+    },
+    {
+      "id": "e0010",
+      "kind": "readme",
+      "path": "evidence/e0010.txt",
+      "sha256": "426431f3ecd909dc6d6c36fd9db720c09a7458803229b85dd745d61b558d1c27",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/vectors/README.md"
+    },
+    {
+      "id": "e0011",
+      "kind": "manifest",
+      "path": "evidence/e0011.txt",
+      "sha256": "578be6cb90e2a851ba90ca616274a0b45fd65901bccce9e48334e02a41271067",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/Cargo.toml.orig"
+    },
+    {
+      "id": "e0012",
+      "kind": "example",
+      "path": "evidence/e0012.txt",
+      "sha256": "f83df3a848589d210df121ad510ea0a3738a55e52e1a050cf23ce30d2bc6bb09",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/examples/rotate_key.rs"
+    },
+    {
+      "id": "e0013",
+      "kind": "documentation",
+      "path": "evidence/e0013.txt",
+      "sha256": "e1f6bf6b4be09aa647cce7400ad6753f30558e76d1faf0d127504e929b80a816",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/RELEASE.md"
+    },
+    {
+      "id": "e0014",
+      "kind": "api",
+      "path": "evidence/e0014.txt",
+      "sha256": "deb42777f09056d036a05f13f98edf9a1c993f5e06ebc53a3ba2566c60d8d610",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/envelope.rs"
+    },
+    {
+      "id": "e0015",
+      "kind": "test",
+      "path": "evidence/e0015.txt",
+      "sha256": "78b00f4c0024c2ba7eed7ebafaa4c0cad38e9fb4d156f7270e692f401e8f2c39",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/compatibility.rs"
+    },
+    {
+      "id": "e0016",
+      "kind": "example",
+      "path": "evidence/e0016.txt",
+      "sha256": "4097f5f75bec987ae6d132768c3eca809f52cce5e54799d4edf6c857b76c769b",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/examples/wrap_key.rs"
+    },
+    {
+      "id": "e0017",
+      "kind": "documentation",
+      "path": "evidence/e0017.txt",
+      "sha256": "8229d42432182cc2555b112bbb4586b4297b23d329b3978519281c793e1993b2",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/SECURITY.md"
+    },
+    {
+      "id": "e0018",
+      "kind": "api",
+      "path": "evidence/e0018.txt",
+      "sha256": "f47724e945d46272ed2dfc67682f877582eecdd88bb68c19c99bc285c06bfcd3",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/ex.rs"
+    },
+    {
+      "id": "e0019",
+      "kind": "test",
+      "path": "evidence/e0019.txt",
+      "sha256": "5ee85761923fb092058b106301d6ddf5e1252e70ed895431fa7b249b208b7568",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/envelope.rs"
+    },
+    {
+      "id": "e0020",
+      "kind": "api",
+      "path": "evidence/e0020.txt",
+      "sha256": "b627250444dfdcc09fd187cb3ef0786b2c8e3d90d3c3bc5e250cb55e3c95f80b",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/g.rs"
+    },
+    {
+      "id": "e0021",
+      "kind": "test",
+      "path": "evidence/e0021.txt",
+      "sha256": "82d572a4300b47ca6ea39f4e9c0afdc5fddf126c59637696d8403c215a9c26e8",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/envelope_vectors.rs"
+    },
+    {
+      "id": "e0022",
+      "kind": "api",
+      "path": "evidence/e0022.txt",
+      "sha256": "7ac1b54d29cf968e8821a1b106a6e804b300944fb37fb7ed128821b04bbe840b",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/generate.rs"
+    },
+    {
+      "id": "e0023",
+      "kind": "test",
+      "path": "evidence/e0023.txt",
+      "sha256": "fc29c2e042b1a613790a9213636d86d14267085023560a5a6b59a640690b560e",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/properties.rs"
+    },
+    {
+      "id": "e0024",
+      "kind": "api",
+      "path": "evidence/e0024.txt",
+      "sha256": "05efab9f1db0b2d3fc7beff14784a48c1b5d2d0bdb3778bb681a270e20c1da6e",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/gx.rs"
+    },
+    {
+      "id": "e0025",
+      "kind": "test",
+      "path": "evidence/e0025.txt",
+      "sha256": "1154f729088c05258fefbdfec8dcdfb4cd234a42fea8c47a0d1add918d3f0727",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/support/mod.rs"
+    },
+    {
+      "id": "e0026",
+      "kind": "api",
+      "path": "evidence/e0026.txt",
+      "sha256": "58ee755073532ec612989656621b3418cde341d832790a2e5d84fe14bbf3f456",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/lqb.rs"
+    },
+    {
+      "id": "e0027",
+      "kind": "api",
+      "path": "evidence/e0027.txt",
+      "sha256": "4035a143b6619df0f98d3eb807f92d1dfcb6141d22c7efc60df765992aba850e",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/memory.rs"
+    },
+    {
+      "id": "e0028",
+      "kind": "api",
+      "path": "evidence/e0028.txt",
+      "sha256": "c59217e948b56dac77479e5387697c7fa8b63a52f36062f94b9baa13ff5f0a3f",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/sip.rs"
+    },
+    {
+      "id": "e0029",
+      "kind": "api",
+      "path": "evidence/e0029.txt",
+      "sha256": "2af1395c2531924ff09a408bcee29aa2e09012486a192d1dd1267158c1f09f6b",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/util.rs"
+    },
+    {
+      "id": "license",
+      "kind": "license",
+      "path": "evidence/license.txt",
+      "sha256": "2df391813dd6226d36239799744df7cc6d2d74d690a58fcc951aecf9652d1e84",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/LICENSE"
+    }
+  ],
+  "warnings": [
+    "Collection is bounded to 48 UTF-8 evidence files, 48 KiB per file, and 320 KiB total; examples and API documentation are sampled, not exhaustive. Rendered documentation and external documentation sites are not crawled.",
+    "Pinned repository archive: 1 link or special-file entries were rejected without following or extracting them."
+  ]
+}

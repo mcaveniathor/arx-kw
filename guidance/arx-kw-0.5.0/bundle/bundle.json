@@ -1,0 +1,673 @@
+{
+  "schema_version": 1,
+  "release": {
+    "name": "arx-kw",
+    "version": "0.5.0",
+    "checksum": "cbb86bc1a4850f71f13be89e8c20c65b784928b486b02e9babd1db38aea1925a",
+    "repository": "https://github.com/mcaveniathor/arx-kw",
+    "repository_commit": "9fee6602ffb20a1d50e30615d131031884d5df1e",
+    "rust_version": "1.88",
+    "features": {
+      "default": [
+        "e",
+        "g",
+        "gx",
+        "ex",
+        "envelope"
+      ],
+      "e": [
+        "dep:chacha20",
+        "dep:arrayref"
+      ],
+      "envelope": [
+        "dep:hmac",
+        "dep:sha2"
+      ],
+      "ex": [
+        "dep:chacha20",
+        "dep:arrayref",
+        "chacha20/xchacha"
+      ],
+      "g": [
+        "dep:chacha20",
+        "dep:arrayref"
+      ],
+      "gx": [
+        "dep:chacha20",
+        "dep:arrayref",
+        "chacha20/xchacha"
+      ]
+    },
+    "collected_at": "1792609233"
+  },
+  "sources": [
+    {
+      "id": "e0001",
+      "kind": "manifest",
+      "path": "sources/e0001.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/Cargo.toml",
+      "sha256": "54d73626b2289fc65d8d0ee713075bbbbd3609b18f3324ca99adcf7518bf5801"
+    },
+    {
+      "id": "e0002",
+      "kind": "release_metadata",
+      "path": "sources/e0002.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/.cargo_vcs_info.json",
+      "sha256": "bbd8b8c40c242b24c9c089d94d1fac09cdbed01410b4792e131c889abf162e33"
+    },
+    {
+      "id": "e0003",
+      "kind": "readme",
+      "path": "sources/e0003.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/README.md",
+      "sha256": "c4ba1cb24e40cd46ba2e0b85ea597d25caaec350081093185c146e3297001f6d"
+    },
+    {
+      "id": "e0004",
+      "kind": "changelog",
+      "path": "sources/e0004.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/CHANGELOG.md",
+      "sha256": "d527077573c21af6d5bdec63162cd8270db6c618e97752c0a386384a108a0d8a"
+    },
+    {
+      "id": "e0005",
+      "kind": "api",
+      "path": "sources/e0005.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/lib.rs",
+      "sha256": "7153986bdd1845e4eb50745c3f767fe563c4cbac1146a3db8e71e4779116fd7f"
+    },
+    {
+      "id": "e0006",
+      "kind": "example",
+      "path": "sources/e0006.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/examples/detached_tag.rs",
+      "sha256": "bfe738cf31546c9aa662915c1909035b048d565d175d5dd4927627e29e2c3319"
+    },
+    {
+      "id": "e0007",
+      "kind": "documentation",
+      "path": "sources/e0007.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/CODE_REVIEW.md",
+      "sha256": "61fbcd128515aa838dfd632901e9cb5ded29b4054b6fd578aaac48fb6312a8f0"
+    },
+    {
+      "id": "e0008",
+      "kind": "api",
+      "path": "sources/e0008.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/e.rs",
+      "sha256": "d089a06729728abc2c05ba16883a8640a4f58370891d97787ed3271537c4cf2a"
+    },
+    {
+      "id": "e0009",
+      "kind": "test",
+      "path": "sources/e0009.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/boundaries.rs",
+      "sha256": "49326229b708db7cce83a2850459ac2b2797e25d45059bde21049d94c63d89db"
+    },
+    {
+      "id": "e0010",
+      "kind": "readme",
+      "path": "sources/e0010.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/vectors/README.md",
+      "sha256": "426431f3ecd909dc6d6c36fd9db720c09a7458803229b85dd745d61b558d1c27"
+    },
+    {
+      "id": "e0011",
+      "kind": "manifest",
+      "path": "sources/e0011.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/Cargo.toml.orig",
+      "sha256": "578be6cb90e2a851ba90ca616274a0b45fd65901bccce9e48334e02a41271067"
+    },
+    {
+      "id": "e0012",
+      "kind": "example",
+      "path": "sources/e0012.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/examples/rotate_key.rs",
+      "sha256": "f83df3a848589d210df121ad510ea0a3738a55e52e1a050cf23ce30d2bc6bb09"
+    },
+    {
+      "id": "e0013",
+      "kind": "documentation",
+      "path": "sources/e0013.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/RELEASE.md",
+      "sha256": "e1f6bf6b4be09aa647cce7400ad6753f30558e76d1faf0d127504e929b80a816"
+    },
+    {
+      "id": "e0014",
+      "kind": "api",
+      "path": "sources/e0014.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/envelope.rs",
+      "sha256": "deb42777f09056d036a05f13f98edf9a1c993f5e06ebc53a3ba2566c60d8d610"
+    },
+    {
+      "id": "e0015",
+      "kind": "test",
+      "path": "sources/e0015.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/compatibility.rs",
+      "sha256": "78b00f4c0024c2ba7eed7ebafaa4c0cad38e9fb4d156f7270e692f401e8f2c39"
+    },
+    {
+      "id": "e0016",
+      "kind": "example",
+      "path": "sources/e0016.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/examples/wrap_key.rs",
+      "sha256": "4097f5f75bec987ae6d132768c3eca809f52cce5e54799d4edf6c857b76c769b"
+    },
+    {
+      "id": "e0017",
+      "kind": "documentation",
+      "path": "sources/e0017.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/SECURITY.md",
+      "sha256": "8229d42432182cc2555b112bbb4586b4297b23d329b3978519281c793e1993b2"
+    },
+    {
+      "id": "e0018",
+      "kind": "api",
+      "path": "sources/e0018.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/ex.rs",
+      "sha256": "f47724e945d46272ed2dfc67682f877582eecdd88bb68c19c99bc285c06bfcd3"
+    },
+    {
+      "id": "e0019",
+      "kind": "test",
+      "path": "sources/e0019.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/envelope.rs",
+      "sha256": "5ee85761923fb092058b106301d6ddf5e1252e70ed895431fa7b249b208b7568"
+    },
+    {
+      "id": "e0020",
+      "kind": "api",
+      "path": "sources/e0020.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/g.rs",
+      "sha256": "b627250444dfdcc09fd187cb3ef0786b2c8e3d90d3c3bc5e250cb55e3c95f80b"
+    },
+    {
+      "id": "e0021",
+      "kind": "test",
+      "path": "sources/e0021.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/envelope_vectors.rs",
+      "sha256": "82d572a4300b47ca6ea39f4e9c0afdc5fddf126c59637696d8403c215a9c26e8"
+    },
+    {
+      "id": "e0022",
+      "kind": "api",
+      "path": "sources/e0022.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/generate.rs",
+      "sha256": "7ac1b54d29cf968e8821a1b106a6e804b300944fb37fb7ed128821b04bbe840b"
+    },
+    {
+      "id": "e0023",
+      "kind": "test",
+      "path": "sources/e0023.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/properties.rs",
+      "sha256": "fc29c2e042b1a613790a9213636d86d14267085023560a5a6b59a640690b560e"
+    },
+    {
+      "id": "e0024",
+      "kind": "api",
+      "path": "sources/e0024.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/gx.rs",
+      "sha256": "05efab9f1db0b2d3fc7beff14784a48c1b5d2d0bdb3778bb681a270e20c1da6e"
+    },
+    {
+      "id": "e0025",
+      "kind": "test",
+      "path": "sources/e0025.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/tests/support/mod.rs",
+      "sha256": "1154f729088c05258fefbdfec8dcdfb4cd234a42fea8c47a0d1add918d3f0727"
+    },
+    {
+      "id": "e0026",
+      "kind": "api",
+      "path": "sources/e0026.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/lqb.rs",
+      "sha256": "58ee755073532ec612989656621b3418cde341d832790a2e5d84fe14bbf3f456"
+    },
+    {
+      "id": "e0027",
+      "kind": "api",
+      "path": "sources/e0027.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/memory.rs",
+      "sha256": "4035a143b6619df0f98d3eb807f92d1dfcb6141d22c7efc60df765992aba850e"
+    },
+    {
+      "id": "e0028",
+      "kind": "api",
+      "path": "sources/e0028.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/sip.rs",
+      "sha256": "c59217e948b56dac77479e5387697c7fa8b63a52f36062f94b9baa13ff5f0a3f"
+    },
+    {
+      "id": "e0029",
+      "kind": "api",
+      "path": "sources/e0029.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/src/util.rs",
+      "sha256": "2af1395c2531924ff09a408bcee29aa2e09012486a192d1dd1267158c1f09f6b"
+    },
+    {
+      "id": "license",
+      "kind": "license",
+      "path": "sources/license.txt",
+      "url": "https://docs.rs/crate/arx-kw/0.5.0/source/LICENSE",
+      "sha256": "2df391813dd6226d36239799744df7cc6d2d74d690a58fcc951aecf9652d1e84"
+    }
+  ],
+  "example_inventory": {
+    "examples": [
+      {
+        "id": "doc-403dabee035e1211-1",
+        "citation": {
+          "source_id": "e0003",
+          "start_line": 106,
+          "end_line": 127
+        },
+        "info": "rust",
+        "code": "# #[cfg(feature = \"gx\")]\n# fn main() -> Result<(), Box<dyn std::error::Error>> {\nuse arx_kw::{gx::GX, ArxKW};\nuse hex::FromHex;\n\nlet key = <[u8; 32]>::from_hex(\n    \"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f\",\n)?;\nlet plaintext = <[u8; 32]>::from_hex(\n    \"deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef\",\n)?;\nlet expected = hex::decode(\n    \"016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3\",\n)?;\nlet blob = GX::encrypt_blob(&key, &plaintext)?;\nassert_eq!(blob, expected);\nassert_eq!(GX::decrypt_blob(&key, &blob)?, plaintext);\n# Ok(())\n# }\n# #[cfg(not(feature = \"gx\"))] fn main() {}\n"
+      },
+      {
+        "id": "doc-403dabee035e1211-2",
+        "citation": {
+          "source_id": "e0003",
+          "start_line": 139,
+          "end_line": 152
+        },
+        "info": "rust",
+        "code": "# #[cfg(all(feature = \"gx\", feature = \"envelope\"))]\n# fn main() -> Result<(), arx_kw::ArxKwError> {\nuse arx_kw::{gx::GX, ArxKW, SecretKey};\nlet key = SecretKey::new([0x42; 32]); // Test fixture only.\nlet context = b\"example.com/key-storage/v1\";\nlet envelope = GX::encrypt_envelope(&key, b\"example key material\", context)?;\nlet plaintext = GX::decrypt_envelope(&key, &envelope, context)?;\nassert_eq!(plaintext.as_ref(), b\"example key material\");\n// `key` and `plaintext` are wiped when they leave scope.\n# Ok(())\n# }\n# #[cfg(not(all(feature = \"gx\", feature = \"envelope\")))] fn main() {}\n"
+      },
+      {
+        "id": "doc-0cc6763a3698d320-3",
+        "citation": {
+          "source_id": "e0005",
+          "start_line": 212,
+          "end_line": 229
+        },
+        "info": "",
+        "code": "# #[cfg(feature = \"gx\")]\n# fn main() -> anyhow::Result<()> {\nuse arx_kw::{ArxKW,gx::GX,assert_ct_eq,ConstantTimeEq};\nextern crate hex;\nuse hex::FromHex;\n# extern crate anyhow;\n\nlet key = <[u8; 32]>::from_hex(\"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f\")?; // The key being used to encrypt the plaintext\nlet plaintext = <[u8; 32]>::from_hex(\"deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef\")?; // The key that we are trying to encrypt, as plaintext\n// The expected output: a \"blob\" consisting of the authentication tag followed by ciphertext. This can be treated as one opaque piece of data when using encrypt_blob and decrypt_blob\nlet blob_expected = <[u8; 48]>::from_hex(\"016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3\")?;   \nlet blob = GX::encrypt_blob(&key, &plaintext)?; // The output of encrypt_blob, a Vec<u8>\nassert_ct_eq!(blob, &blob_expected);\n# Ok(())\n# }\n# #[cfg(not(feature = \"gx\"))] fn main() {}\n"
+      },
+      {
+        "id": "doc-0cc6763a3698d320-4",
+        "citation": {
+          "source_id": "e0005",
+          "start_line": 261,
+          "end_line": 277
+        },
+        "info": "",
+        "code": "# #[cfg(feature = \"e\")]\n# fn main() -> anyhow::Result<()> {\nuse arx_kw::{ArxKW,e::E,assert_ct_eq,ConstantTimeEq};\nextern crate hex;\nuse hex::FromHex;\n# extern crate anyhow;\n\nlet key = <[u8; 48]>::from_hex(\"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f\")?;\nlet blob = <[u8; 48]>::from_hex(\"c4f21d3b4dbcc566c3a73bbc59790f2fe6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1\")?;\nlet plaintext_expected = <[u8;32]>::from_hex(\"deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef\")?;\nlet plaintext = E::decrypt_blob(&key, &blob)?;\nassert_ct_eq!(plaintext, &plaintext_expected);\n# Ok(())\n# }\n# #[cfg(not(feature = \"e\"))] fn main() {}\n"
+      },
+      {
+        "id": "doc-087a7de4d36a294e-5",
+        "citation": {
+          "source_id": "e0018",
+          "start_line": 58,
+          "end_line": 69
+        },
+        "info": "",
+        "code": "# use arx_kw::ex::construct_nonce;\n# use arx_kw::AuthTag;\nlet mut t = AuthTag([0u8; 16]);\nfor i in (0u8..16u8) {\n    t.0[i as usize] = i;\n}\n\nlet nonce = construct_nonce(&t);\nassert_eq!(nonce,\n[0x61,0x72,0x62,0x69,0x74,0x72,0x45,0x58,0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0xb,0xc,0xd,0xe,0xf]);\n"
+      },
+      {
+        "id": "doc-087a7de4d36a294e-6",
+        "citation": {
+          "source_id": "e0018",
+          "start_line": 72,
+          "end_line": 90
+        },
+        "info": "",
+        "code": " extern crate hex;\n# extern crate anyhow;\nuse hex::FromHex;\nuse arx_kw::{\n    ex::construct_nonce,\n    AuthTag,\n    ConstantTimeEq,\n    assert_ct_eq\n};\n\n# fn main() -> anyhow::Result<()> {\nlet authentication_tag = AuthTag(<[u8;16]>::from_hex(\"c4f21d3b4dbcc566c3a73bbc59790f2f\")?);\nlet nonce_expected = <[u8;24]>::from_hex(\"6172626974724558c4f21d3b4dbcc566c3a73bbc59790f2f\")?;\nlet nonce = construct_nonce(&authentication_tag);\nassert_ct_eq!(nonce, &nonce_expected);\nOk(())\n# }\n"
+      },
+      {
+        "id": "doc-37e1ff775b0df319-7",
+        "citation": {
+          "source_id": "e0024",
+          "start_line": 58,
+          "end_line": 70
+        },
+        "info": "",
+        "code": "# use arx_kw::gx::construct_nonce;\n# use arx_kw::AuthTag;\nlet mut t = AuthTag([0u8; 16]);\nfor i in (0u8..16u8) {\n    t.0[i as usize] = i;\n}\n// t contains [0x0, 0x1, 0x2 .. 0xf]\n\nlet nonce = construct_nonce(&t);\nassert_eq!(nonce,\n[0x61,0x72,0x62,0x69,0x74,0x72,0x47,0x58,0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0xb,0xc,0xd,0xe,0xf]);\n"
+      },
+      {
+        "id": "doc-37e1ff775b0df319-8",
+        "citation": {
+          "source_id": "e0024",
+          "start_line": 72,
+          "end_line": 88
+        },
+        "info": "",
+        "code": " extern crate hex;\n# extern crate anyhow;\n use hex::FromHex;\n# use arx_kw::{\n    AuthTag,\n    gx::construct_nonce,\n};\n\n# fn main() -> anyhow::Result<()> {\nlet authentication_tag = AuthTag(<[u8;16]>::from_hex(\"016325cf6a3c4b2e3b039675e1ccbc65\")?);\nlet nonce_expected = <[u8;24]>::from_hex(\"6172626974724758016325cf6a3c4b2e3b039675e1ccbc65\")?;\nlet nonce = construct_nonce(&authentication_tag);\nassert_eq!(nonce,nonce_expected);\n# Ok(())\n# }\n"
+      }
+    ],
+    "warnings": [
+      "Example coverage is limited to collected Markdown code blocks and literal Rust doc attributes/comments. Unlabelled blocks are treated as Rust only in Rust documentation. Macros, cfg_attr, external includes, and generated documentation are not expanded; standalone example programs are still ordinary evidence.",
+      "e0005:7: nonliteral doc attribute was not expanded."
+    ]
+  },
+  "analysis": {
+    "summary": "Release-specific guidance for arx-kw 0.5.0: context-bound data-key wrapping, wrapping-key rotation, and detached-tag storage. Recipes use minimal features and OS-generated keys. Imported structured analysis based on the frozen published crate; no separate review is recorded. The guide covers these three tasks, not the entire API.",
+    "findings": [
+      {
+        "id": "context-wrapping",
+        "title": "Bind a data key to a stable application context",
+        "guidance": "For context-bound GX wrapping enable gx and envelope, import ArxKW, and use encrypt_envelope/decrypt_envelope. Preserve the exact context bytes: the envelope does not store them, and a changed context fails authentication. Contexts are limited to 4096 bytes. Envelopes add 24 bytes and never silently fall back to legacy blobs.",
+        "basis": "documented",
+        "features": [
+          "gx",
+          "envelope"
+        ],
+        "citations": [
+          {
+            "source_id": "e0003",
+            "start_line": 133,
+            "end_line": 165
+          },
+          {
+            "source_id": "e0016",
+            "start_line": 1,
+            "end_line": 33
+          }
+        ]
+      },
+      {
+        "id": "minimal-features",
+        "title": "Select only the required variant and envelope features",
+        "guidance": "Disable default features for a minimal dependency graph. gx,envelope provides context-bound GX; g alone provides raw detached wrapping. In 0.5.0 a variant alone no longer enables envelope methods/constants. HMAC and SHA-256 follow envelope; ChaCha and arrayref follow variants; only EX/GX enable XChaCha. zeroize, subtle, and thiserror remain mandatory. Rust 1.88 is the crate minimum.",
+        "basis": "documented",
+        "features": [
+          "gx",
+          "g",
+          "envelope"
+        ],
+        "citations": [
+          {
+            "source_id": "e0003",
+            "start_line": 55,
+            "end_line": 98
+          }
+        ]
+      },
+      {
+        "id": "secret-ownership",
+        "title": "Keep owned keys and recovered plaintext in erasing guards",
+        "guidance": "Use SecretKey for owned wrapping keys and prefer decrypt_envelope or decrypt_secret for drop-time erasure. Raw decrypt and decrypt_blob return Vec<u8>; immediately guard recovered plaintext with Zeroizing when using them. Do not print secret material. Drop-time wiping cannot erase borrowed inputs or guarantee removal of copied keys, registers, swap, or crash dumps.",
+        "basis": "documented",
+        "features": [],
+        "citations": [
+          {
+            "source_id": "e0003",
+            "start_line": 39,
+            "end_line": 49
+          },
+          {
+            "source_id": "e0027",
+            "start_line": 1,
+            "end_line": 117
+          },
+          {
+            "source_id": "e0006",
+            "start_line": 1,
+            "end_line": 29
+          }
+        ]
+      },
+      {
+        "id": "rotation",
+        "title": "Authenticate before rotating a wrapping key",
+        "guidance": "Open the existing envelope under the old wrapping key and context, then wrap the authenticated data key under the new wrapping key using the same context. Keep the intermediate plaintext guarded. Persist and verify the replacement before retiring the old key; production rotation also requires transactions, backups, and key identifiers.",
+        "basis": "documented",
+        "features": [
+          "gx",
+          "envelope"
+        ],
+        "citations": [
+          {
+            "source_id": "e0012",
+            "start_line": 1,
+            "end_line": 30
+          },
+          {
+            "source_id": "e0003",
+            "start_line": 185,
+            "end_line": 188
+          }
+        ]
+      },
+      {
+        "id": "detached-storage",
+        "title": "Use dedicated keys with raw detached storage",
+        "guidance": "G accepts a 32-byte wrapping key and at most 64 plaintext bytes. encrypt returns ciphertext and a separate 16-byte AuthTag. Retain both, reject every decryption error, and use a dedicated key for this protocol: the raw format has no version, variant, or application context.",
+        "basis": "documented",
+        "features": [
+          "g"
+        ],
+        "citations": [
+          {
+            "source_id": "e0006",
+            "start_line": 1,
+            "end_line": 29
+          },
+          {
+            "source_id": "e0003",
+            "start_line": 24,
+            "end_line": 37
+          },
+          {
+            "source_id": "e0003",
+            "start_line": 129,
+            "end_line": 131
+          }
+        ]
+      },
+      {
+        "id": "security-boundaries",
+        "title": "Use deterministic wrapping for high-entropy key material",
+        "guidance": "Generate keys with a cryptographically secure random source. Deterministic wrapping reveals repeated inputs within a key and context; it is not general-purpose encryption for passwords or predictable messages. E/G accept up to 64 bytes; EX/GX up to one MiB. Applications must provide replay/rollback protection and key lifecycle management. This crate has no established independent cryptographic audit.",
+        "basis": "documented",
+        "features": [],
+        "citations": [
+          {
+            "source_id": "e0003",
+            "start_line": 14,
+            "end_line": 49
+          },
+          {
+            "source_id": "e0017",
+            "start_line": 24,
+            "end_line": 41
+          }
+        ]
+      }
+    ],
+    "recipes": [
+      {
+        "id": "wrap-key",
+        "title": "Wrap a data key for a tenant",
+        "description": "Generate a data key and wrapping key from OS randomness; wrap with GX and verify recovery and wrong-context rejection. The example does not persist wrapping keys.",
+        "code": "//! Wrap a fresh data-encryption key with an application-specific context.\nuse arx_kw::{gx::GX, ArxKW, ArxKwError, ConstantTimeEq, SecretKey};\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    // A real application loads its wrapping key from protected persistent storage.\n    let mut wrapping_key = SecretKey::new([0; 32]);\n    let mut data_key = SecretKey::new([0; 32]);\n    getrandom::fill(&mut *wrapping_key)?;\n    getrandom::fill(&mut *data_key)?;\n\n    // Include protocol and tenant identifiers in the application context.\n    let context = b\"example.com/backups/v1/tenant-42\";\n    let envelope = GX::encrypt_envelope(&wrapping_key, &*data_key, context)?;\n    // Store the envelope, keeping the wrapping key separately protected.\n    let recovered = GX::decrypt_envelope(&wrapping_key, &envelope, context)?;\n    assert!(bool::from(recovered.as_ref().ct_eq(data_key.as_slice())));\n    assert!(matches!(\n        GX::decrypt_envelope(\n            &wrapping_key,\n            &envelope,\n            b\"example.com/backups/v1/tenant-43\"\n        ),\n        Err(ArxKwError::BadTags)\n    ));\n\n    println!(\n        \"Wrapped a 32-byte data key into a {}-byte envelope.\",\n        envelope.len()\n    );\n    println!(\"Recovered the key and rejected a different tenant context.\");\n    // Owned keys and recovered plaintext are wiped when dropped; never log them.\n    Ok(())\n}\n",
+        "default_features": false,
+        "features": [
+          "gx",
+          "envelope"
+        ],
+        "dependencies": {
+          "getrandom": {
+            "version": "=0.4.3",
+            "features": [
+              "std"
+            ],
+            "default_features": false
+          }
+        },
+        "citations": [
+          {
+            "source_id": "e0016",
+            "start_line": 1,
+            "end_line": 33
+          },
+          {
+            "source_id": "e0003",
+            "start_line": 71,
+            "end_line": 98
+          },
+          {
+            "source_id": "e0003",
+            "start_line": 139,
+            "end_line": 165
+          }
+        ]
+      },
+      {
+        "id": "rotate-key",
+        "title": "Rotate a wrapping key",
+        "description": "Authenticate an existing envelope, rewrap under a new wrapping key, and verify that the data key is unchanged and the old key is rejected. Durable storage and transactional rotation remain application responsibilities.",
+        "code": "//! Rewrap stored key material under a new wrapping key without changing the data key.\nuse arx_kw::{gx::GX, ArxKW, ArxKwError, ConstantTimeEq, SecretKey};\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let mut old_wrapping_key = SecretKey::new([0; 32]);\n    let mut new_wrapping_key = SecretKey::new([0; 32]);\n    let mut data_key = SecretKey::new([0; 32]);\n    getrandom::fill(&mut *old_wrapping_key)?;\n    getrandom::fill(&mut *new_wrapping_key)?;\n    getrandom::fill(&mut *data_key)?;\n    let context = b\"example.com/key-vault/v1/record-7\";\n    let old_envelope = GX::encrypt_envelope(&old_wrapping_key, &*data_key, context)?;\n\n    // Authenticate before rewrapping. The temporary plaintext wipes on scope exit.\n    let new_envelope = {\n        let plaintext = GX::decrypt_envelope(&old_wrapping_key, &old_envelope, context)?;\n        GX::encrypt_envelope(&new_wrapping_key, &plaintext, context)?\n    };\n    let recovered = GX::decrypt_envelope(&new_wrapping_key, &new_envelope, context)?;\n    assert!(bool::from(recovered.as_ref().ct_eq(data_key.as_slice())));\n    assert!(matches!(\n        GX::decrypt_envelope(&old_wrapping_key, &new_envelope, context),\n        Err(ArxKwError::BadTags)\n    ));\n\n    // Persist and verify the replacement before retiring the old wrapping key.\n    // Production rotation also needs transactions, backups, and a key identifier.\n    println!(\"Rewrapped the data key; the old wrapping key cannot open the new envelope.\");\n    Ok(())\n}\n",
+        "default_features": false,
+        "features": [
+          "gx",
+          "envelope"
+        ],
+        "dependencies": {
+          "getrandom": {
+            "version": "=0.4.3",
+            "features": [
+              "std"
+            ],
+            "default_features": false
+          }
+        },
+        "citations": [
+          {
+            "source_id": "e0012",
+            "start_line": 1,
+            "end_line": 30
+          },
+          {
+            "source_id": "e0003",
+            "start_line": 71,
+            "end_line": 98
+          },
+          {
+            "source_id": "e0003",
+            "start_line": 139,
+            "end_line": 165
+          }
+        ]
+      },
+      {
+        "id": "detached-tag",
+        "title": "Store ciphertext and tag separately",
+        "description": "Use raw G wrapping with a dedicated protocol key, guard recovered plaintext, and verify rejection of a modified tag.",
+        "code": "//! Store ciphertext and its authentication tag separately using only feature `g`.\nuse arx_kw::{g::G, ArxKW, ArxKwError, ConstantTimeEq, SecretKey, Zeroizing};\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let mut wrapping_key = SecretKey::new([0; 32]);\n    let mut data_key = SecretKey::new([0; 32]);\n    getrandom::fill(&mut *wrapping_key)?;\n    getrandom::fill(&mut *data_key)?;\n\n    // G accepts at most 64 bytes. Use a dedicated wrapping key for this protocol;\n    // this raw format carries no version, variant, or application context.\n    let (ciphertext, tag) = G::encrypt(&wrapping_key, &*data_key)?;\n    // For example, store these in separate database columns.\n    // Detached decryption returns a Vec, so explicitly guard its erasure.\n    let recovered = Zeroizing::new(G::decrypt(&wrapping_key, &ciphertext, &tag)?);\n    assert!(bool::from(recovered.as_slice().ct_eq(data_key.as_slice())));\n\n    let mut changed_tag = tag;\n    changed_tag.0[0] ^= 1;\n    assert!(matches!(\n        G::decrypt(&wrapping_key, &ciphertext, &changed_tag),\n        Err(ArxKwError::BadTags)\n    ));\n    println!(\n        \"Stored {} ciphertext bytes and a 16-byte tag; tampering was rejected.\",\n        ciphertext.len()\n    );\n    Ok(())\n}\n",
+        "default_features": false,
+        "features": [
+          "g"
+        ],
+        "dependencies": {
+          "getrandom": {
+            "version": "=0.4.3",
+            "features": [
+              "std"
+            ],
+            "default_features": false
+          }
+        },
+        "citations": [
+          {
+            "source_id": "e0006",
+            "start_line": 1,
+            "end_line": 29
+          },
+          {
+            "source_id": "e0003",
+            "start_line": 71,
+            "end_line": 98
+          }
+        ]
+      }
+    ],
+    "example_coverage": [
+      {
+        "example_id": "doc-403dabee035e1211-1",
+        "disposition": "skipped",
+        "recipe_ids": [],
+        "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage."
+      },
+      {
+        "example_id": "doc-403dabee035e1211-2",
+        "disposition": "supporting",
+        "recipe_ids": [
+          "wrap-key",
+          "rotate-key"
+        ],
+        "reason": "The envelope API and SecretKey ownership pattern support both runnable GX recipes; the recipes use OS randomness instead of fixture keys."
+      },
+      {
+        "example_id": "doc-0cc6763a3698d320-3",
+        "disposition": "skipped",
+        "recipe_ids": [],
+        "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage."
+      },
+      {
+        "example_id": "doc-0cc6763a3698d320-4",
+        "disposition": "skipped",
+        "recipe_ids": [],
+        "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage."
+      },
+      {
+        "example_id": "doc-087a7de4d36a294e-5",
+        "disposition": "skipped",
+        "recipe_ids": [],
+        "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence."
+      },
+      {
+        "example_id": "doc-087a7de4d36a294e-6",
+        "disposition": "skipped",
+        "recipe_ids": [],
+        "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence."
+      },
+      {
+        "example_id": "doc-37e1ff775b0df319-7",
+        "disposition": "skipped",
+        "recipe_ids": [],
+        "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence."
+      },
+      {
+        "example_id": "doc-37e1ff775b0df319-8",
+        "disposition": "skipped",
+        "recipe_ids": [],
+        "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence."
+      }
+    ]
+  },
+  "review": null,
+  "verification": [
+    {
+      "recipe_id": "wrap-key",
+      "input_sha256": "a7df127e76348ce056c05fb36f88778c030a6bcbaa19f4bfa416b72033c26ac3",
+      "status": "compiled",
+      "rustc_version": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "log_path": "verification/wrap-key/check.log",
+      "lockfile_sha256": "32d9ba81a9cfd97a592e9becdd9f575d9bd4e398cb18ba6a8dfb2915ac788d29",
+      "message": "cargo check --locked --all-targets passed; runtime behavior was not tested"
+    },
+    {
+      "recipe_id": "rotate-key",
+      "input_sha256": "e16c0350014735e97c0504d79ba4eb0e1082cde0836e28b02b54e19aa806d438",
+      "status": "compiled",
+      "rustc_version": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "log_path": "verification/rotate-key/check.log",
+      "lockfile_sha256": "a7bb99d037c1cb2bda53f7615703a3c762001fc162669c4f65cc89b0cf434f80",
+      "message": "cargo check --locked --all-targets passed; runtime behavior was not tested"
+    },
+    {
+      "recipe_id": "detached-tag",
+      "input_sha256": "ba8d0fa2488ec68b67110037d67212669d5d60144dcfb6c4b151987440b09b08",
+      "status": "compiled",
+      "rustc_version": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "log_path": "verification/detached-tag/check.log",
+      "lockfile_sha256": "a34b04d03185f44fae4906dda5983ef6b4d4a591ec3e089b87110e2a189290bc",
+      "message": "cargo check --locked --all-targets passed; runtime behavior was not tested"
+    }
+  ],
+  "warnings": [
+    "Collection is bounded to 48 UTF-8 evidence files, 48 KiB per file, and 320 KiB total; examples and API documentation are sampled, not exhaustive. Rendered documentation and external documentation sites are not crawled.",
+    "Pinned repository archive: 1 link or special-file entries were rejected without following or extracting them."
+  ]
+}
