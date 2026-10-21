@@ -33,8 +33,10 @@ jobs:
         run: |
           cargo generate-lockfile
           cargo run --manifest-path site/Cargo.toml --locked -- target/pages --base /arx-kw/
+          cargo clean --doc
           cargo doc --all-features --no-deps --locked
-          cp -R target/doc target/pages/doc
+          mkdir -p target/pages/doc
+          cp -R target/doc/. target/pages/doc/
           python dev/check-site.py target/pages --base /arx-kw/
         env:
           RUSTDOCFLAGS: -D warnings

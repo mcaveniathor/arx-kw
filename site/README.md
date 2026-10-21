@@ -12,8 +12,10 @@ From the repository root, using Rust 1.88 or newer and Python 3.11 or newer:
 
 ```sh
 cargo run --manifest-path site/Cargo.toml --locked -- target/pages/arx-kw --base /arx-kw/
+cargo clean --doc
 cargo doc --all-features --no-deps
-cp -R target/doc target/pages/arx-kw/doc
+mkdir -p target/pages/arx-kw/doc
+cp -R target/doc/. target/pages/arx-kw/doc/
 python dev/check-site.py target/pages/arx-kw --base /arx-kw/
 python -m http.server 8000 --directory target/pages
 ```

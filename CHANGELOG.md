@@ -53,3 +53,6 @@ assurance are not supplied by this release preparation.
 - Add a version-tagged release pipeline with package provenance, SHA-256 and
   byte-for-byte rebuild checks, temporary crates.io OIDC credentials, safe
   registry retries, and GitHub release assets after publication succeeds.
+- Add isolated SLSA Build Level 3 provenance generation, mandatory signature,
+  source/tag/builder/digest verification before publication, and signed provenance
+  as a release asset with consumer verification instructions.

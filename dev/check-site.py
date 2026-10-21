@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate generated documentation, including project-base links and assets."""
 import argparse
+import os
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urljoin, urlsplit
@@ -73,4 +74,10 @@ if __name__ == "__main__":
     parser.add_argument("root", type=Path)
     parser.add_argument("--base", default="/arx-kw/")
     args = parser.parse_args()
-    check(args.root, args.base)
+    try:
+        check(args.root, args.base)
+    except (AssertionError, OSError, ValueError) as error:
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            message = str(error).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+            print(f"::error title=Static site validation failed::{message}", flush=True)
+        raise

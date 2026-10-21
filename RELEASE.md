@@ -36,8 +36,9 @@ CI tests stable Rust and the minimum supported Rust 1.88 on Linux, macOS, and
 Windows. Linux jobs check feature combinations, benchmark smoke tests, strict
 Clippy, formatting, workflow syntax, release guardrails, and the built Stucco
 site with its generated API reference. A separate weekly dependency audit
-checks both the library and website lockfiles. All external actions are pinned
-to immutable commits, annotated with their versions.
+checks both the library and website lockfiles. External actions are pinned to immutable commits, annotated with their versions.
+The SLSA reusable generator is the exception: upstream requires a full semantic
+version tag (`v2.1.0`) so its signing identity can be verified.
 
 The library intentionally ignores Cargo.lock to exercise current dependency
 resolution. CI generates a lockfile and uses `--locked` for subsequent steps.
@@ -61,8 +62,10 @@ cargo test --no-default-features --locked
 cargo bench --all-features --locked -- --test
 python -B -m unittest discover -s dev/tests -v
 cargo run --manifest-path site/Cargo.toml --locked -- target/pages --base /arx-kw/
+cargo clean --doc
 RUSTDOCFLAGS='-D warnings' cargo doc --no-deps --all-features --locked
-cp -R target/doc target/pages/doc
+mkdir -p target/pages/doc
+cp -R target/doc/. target/pages/doc/
 python dev/check-site.py target/pages --base /arx-kw/
 cargo audit
 cargo audit --file site/Cargo.lock
@@ -101,11 +104,18 @@ Pushing the tag starts `.github/workflows/release.yml`:
   dry run, then explicitly retain the archive with `cargo package`; verify its
   version and clean VCS commit; record SHA-256
   and changelog release notes.
-- **Publish:** download the verified archive and lockfile, rebuild the package,
-  and compare it byte for byte before obtaining registry credentials. Then
-  authenticate through trusted publishing and publish with the same lockfile.
+- **Provenance:** pass the verified crate's SHA-256 to the isolated upstream
+  SLSA generator. Sign keylessly using GitHub OIDC and record the signing event
+  in Sigstore's public transparency log. This job has no registry credentials
+  and does not create a GitHub release.
+- **Publish:** download the verified archive, lockfile, and signed provenance.
+  Verify the artifact digest, source repository, exact version tag, and trusted
+  generator identity using `slsa-verifier`. Rebuild the package and compare it
+  byte for byte. Only then obtain registry credentials through trusted publishing
+  and publish with the same lockfile.
 - **GitHub release:** only after registry publication succeeds, create the
-  release and attach the verified `.crate` and `SHA256SUMS`. Cargo versions
+  release and attach the verified `.crate`, `SHA256SUMS`, and
+  `arx-kw.intoto.jsonl` signed provenance. Cargo versions
   with a prerelease suffix produce a GitHub prerelease.
 
 The verified package and lockfile are also retained as a workflow artifact for
@@ -131,3 +141,33 @@ the construction, envelope protocol, or implementation. Zeroization covers
 owned buffers and state, not every compiler/register/provider copy or
 caller-owned data. Neither a formal constant-time proof nor an independent
 cryptographic audit is claimed by release automation.
+
+## Verify release provenance
+
+Install [slsa-verifier](https://github.com/slsa-framework/slsa-verifier) v2.7.1
+from its verified distribution or build its tagged source. Download the crate
+and signed provenance from the same GitHub release, then run:
+
+```sh
+gh release download v0.4.0 --repo mcaveniathor/arx-kw \
+  --pattern 'arx-kw-0.4.0.crate' --pattern arx-kw.intoto.jsonl
+slsa-verifier verify-artifact arx-kw-0.4.0.crate \
+  --provenance-path arx-kw.intoto.jsonl \
+  --source-uri github.com/mcaveniathor/arx-kw \
+  --source-tag v0.4.0 \
+  --builder-id 'https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0'
+```
+
+The same verification can be applied to the `.crate` downloaded from crates.io;
+its bytes must match the attested digest. A checksum alone does not authenticate
+an artifact. Verification failures must block publication; do not disable the
+provenance dependency or substitute an unsigned statement.
+
+This integration uses the upstream generic SLSA Build Level 3 generator and its
+isolated signing workflow. It attests the caller-supplied crate digest and source
+identity; it does not make dependencies hermetic, establish reproducible compiled
+binaries, or certify cryptographic correctness. The initial tagged hosted run
+must succeed before provenance is available or end-to-end verification can be
+claimed. No historical release is retroactively attested. Generator signing
+requires access to GitHub OIDC and Sigstore services; do not run it on a
+self-hosted replacement or grant the generator registry secrets.
