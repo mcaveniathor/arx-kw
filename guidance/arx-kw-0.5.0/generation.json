@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "tool": {
+    "name": "symposiast",
+    "version": "0.1.0",
+    "repository": "https://github.com/mcaveniathor/symposiast",
+    "commit": "2ad0f3e2d8f6b043a9a600a9788da498a20e87fe"
+  },
+  "analysis_method": "imported structured analysis",
+  "separate_review": false,
+  "release": {
+    "name": "arx-kw",
+    "version": "0.5.0",
+    "checksum": "cbb86bc1a4850f71f13be89e8c20c65b784928b486b02e9babd1db38aea1925a",
+    "repository": "https://github.com/mcaveniathor/arx-kw",
+    "repository_commit": "9fee6602ffb20a1d50e30615d131031884d5df1e",
+    "rust_version": "1.88",
+    "features": {
+      "default": [
+        "e",
+        "g",
+        "gx",
+        "ex",
+        "envelope"
+      ],
+      "e": [
+        "dep:chacha20",
+        "dep:arrayref"
+      ],
+      "envelope": [
+        "dep:hmac",
+        "dep:sha2"
+      ],
+      "ex": [
+        "dep:chacha20",
+        "dep:arrayref",
+        "chacha20/xchacha"
+      ],
+      "g": [
+        "dep:chacha20",
+        "dep:arrayref"
+      ],
+      "gx": [
+        "dep:chacha20",
+        "dep:arrayref",
+        "chacha20/xchacha"
+      ]
+    },
+    "collected_at": "1792609233"
+  },
+  "license_supplement": "dev/add-guidance-license.py preserves LICENSE from the checksum-verified published archive; it is not selected by this collector.",
+  "validation": {
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "platform": "Linux",
+    "architecture": "x86_64",
+    "runtime": [
+      {
+        "recipe_id": "wrap-key",
+        "command": "cargo run --locked",
+        "status": "passed",
+        "log_path": "bundle/verification/wrap-key/run.log"
+      },
+      {
+        "recipe_id": "rotate-key",
+        "command": "cargo run --locked",
+        "status": "passed",
+        "log_path": "bundle/verification/rotate-key/run.log"
+      },
+      {
+        "recipe_id": "detached-tag",
+        "command": "cargo run --locked",
+        "status": "passed",
+        "log_path": "bundle/verification/detached-tag/run.log"
+      }
+    ],
+    "tooling": {
+      "command": "python dev/check-guidance.py --offline",
+      "status": "passed",
+      "checks": [
+        "portable export matches frozen bundle",
+        "recipe manifests and registry checksums match 0.5.0",
+        "three recipes compile and execute",
+        "MCP release info, search, and recipe retrieval",
+        "version-drift warning for a synthetic 0.4.0 lockfile"
+      ],
+      "scope": "Isolated validation; no consumer-wide installation or Symposium sync was performed."
+    }
+  }
+}

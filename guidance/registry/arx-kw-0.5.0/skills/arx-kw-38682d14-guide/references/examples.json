@@ -1,0 +1,143 @@
+{
+  "coverage": [
+    {
+      "disposition": "skipped",
+      "example_id": "doc-403dabee035e1211-1",
+      "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "supporting",
+      "example_id": "doc-403dabee035e1211-2",
+      "reason": "The envelope API and SecretKey ownership pattern support both runnable GX recipes; the recipes use OS randomness instead of fixture keys.",
+      "recipe_ids": [
+        "wrap-key",
+        "rotate-key"
+      ]
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-0cc6763a3698d320-3",
+      "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-0cc6763a3698d320-4",
+      "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-087a7de4d36a294e-5",
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-087a7de4d36a294e-6",
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-37e1ff775b0df319-7",
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence.",
+      "recipe_ids": []
+    },
+    {
+      "disposition": "skipped",
+      "example_id": "doc-37e1ff775b0df319-8",
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence.",
+      "recipe_ids": []
+    }
+  ],
+  "inventory": {
+    "examples": [
+      {
+        "citation": {
+          "end_line": 127,
+          "source_id": "e0003",
+          "start_line": 106
+        },
+        "code": "# #[cfg(feature = \"gx\")]\n# fn main() -> Result<(), Box<dyn std::error::Error>> {\nuse arx_kw::{gx::GX, ArxKW};\nuse hex::FromHex;\n\nlet key = <[u8; 32]>::from_hex(\n    \"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f\",\n)?;\nlet plaintext = <[u8; 32]>::from_hex(\n    \"deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef\",\n)?;\nlet expected = hex::decode(\n    \"016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3\",\n)?;\nlet blob = GX::encrypt_blob(&key, &plaintext)?;\nassert_eq!(blob, expected);\nassert_eq!(GX::decrypt_blob(&key, &blob)?, plaintext);\n# Ok(())\n# }\n# #[cfg(not(feature = \"gx\"))] fn main() {}\n",
+        "id": "doc-403dabee035e1211-1",
+        "info": "rust"
+      },
+      {
+        "citation": {
+          "end_line": 152,
+          "source_id": "e0003",
+          "start_line": 139
+        },
+        "code": "# #[cfg(all(feature = \"gx\", feature = \"envelope\"))]\n# fn main() -> Result<(), arx_kw::ArxKwError> {\nuse arx_kw::{gx::GX, ArxKW, SecretKey};\nlet key = SecretKey::new([0x42; 32]); // Test fixture only.\nlet context = b\"example.com/key-storage/v1\";\nlet envelope = GX::encrypt_envelope(&key, b\"example key material\", context)?;\nlet plaintext = GX::decrypt_envelope(&key, &envelope, context)?;\nassert_eq!(plaintext.as_ref(), b\"example key material\");\n// `key` and `plaintext` are wiped when they leave scope.\n# Ok(())\n# }\n# #[cfg(not(all(feature = \"gx\", feature = \"envelope\")))] fn main() {}\n",
+        "id": "doc-403dabee035e1211-2",
+        "info": "rust"
+      },
+      {
+        "citation": {
+          "end_line": 229,
+          "source_id": "e0005",
+          "start_line": 212
+        },
+        "code": "# #[cfg(feature = \"gx\")]\n# fn main() -> anyhow::Result<()> {\nuse arx_kw::{ArxKW,gx::GX,assert_ct_eq,ConstantTimeEq};\nextern crate hex;\nuse hex::FromHex;\n# extern crate anyhow;\n\nlet key = <[u8; 32]>::from_hex(\"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f\")?; // The key being used to encrypt the plaintext\nlet plaintext = <[u8; 32]>::from_hex(\"deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef\")?; // The key that we are trying to encrypt, as plaintext\n// The expected output: a \"blob\" consisting of the authentication tag followed by ciphertext. This can be treated as one opaque piece of data when using encrypt_blob and decrypt_blob\nlet blob_expected = <[u8; 48]>::from_hex(\"016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3\")?;   \nlet blob = GX::encrypt_blob(&key, &plaintext)?; // The output of encrypt_blob, a Vec<u8>\nassert_ct_eq!(blob, &blob_expected);\n# Ok(())\n# }\n# #[cfg(not(feature = \"gx\"))] fn main() {}\n",
+        "id": "doc-0cc6763a3698d320-3",
+        "info": ""
+      },
+      {
+        "citation": {
+          "end_line": 277,
+          "source_id": "e0005",
+          "start_line": 261
+        },
+        "code": "# #[cfg(feature = \"e\")]\n# fn main() -> anyhow::Result<()> {\nuse arx_kw::{ArxKW,e::E,assert_ct_eq,ConstantTimeEq};\nextern crate hex;\nuse hex::FromHex;\n# extern crate anyhow;\n\nlet key = <[u8; 48]>::from_hex(\"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f\")?;\nlet blob = <[u8; 48]>::from_hex(\"c4f21d3b4dbcc566c3a73bbc59790f2fe6457d24abaf7c2ebdb91416a18366d31a66db61a4e45c9f42a119c353bb1eb1\")?;\nlet plaintext_expected = <[u8;32]>::from_hex(\"deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef\")?;\nlet plaintext = E::decrypt_blob(&key, &blob)?;\nassert_ct_eq!(plaintext, &plaintext_expected);\n# Ok(())\n# }\n# #[cfg(not(feature = \"e\"))] fn main() {}\n",
+        "id": "doc-0cc6763a3698d320-4",
+        "info": ""
+      },
+      {
+        "citation": {
+          "end_line": 69,
+          "source_id": "e0018",
+          "start_line": 58
+        },
+        "code": "# use arx_kw::ex::construct_nonce;\n# use arx_kw::AuthTag;\nlet mut t = AuthTag([0u8; 16]);\nfor i in (0u8..16u8) {\n    t.0[i as usize] = i;\n}\n\nlet nonce = construct_nonce(&t);\nassert_eq!(nonce,\n[0x61,0x72,0x62,0x69,0x74,0x72,0x45,0x58,0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0xb,0xc,0xd,0xe,0xf]);\n",
+        "id": "doc-087a7de4d36a294e-5",
+        "info": ""
+      },
+      {
+        "citation": {
+          "end_line": 90,
+          "source_id": "e0018",
+          "start_line": 72
+        },
+        "code": " extern crate hex;\n# extern crate anyhow;\nuse hex::FromHex;\nuse arx_kw::{\n    ex::construct_nonce,\n    AuthTag,\n    ConstantTimeEq,\n    assert_ct_eq\n};\n\n# fn main() -> anyhow::Result<()> {\nlet authentication_tag = AuthTag(<[u8;16]>::from_hex(\"c4f21d3b4dbcc566c3a73bbc59790f2f\")?);\nlet nonce_expected = <[u8;24]>::from_hex(\"6172626974724558c4f21d3b4dbcc566c3a73bbc59790f2f\")?;\nlet nonce = construct_nonce(&authentication_tag);\nassert_ct_eq!(nonce, &nonce_expected);\nOk(())\n# }\n",
+        "id": "doc-087a7de4d36a294e-6",
+        "info": ""
+      },
+      {
+        "citation": {
+          "end_line": 70,
+          "source_id": "e0024",
+          "start_line": 58
+        },
+        "code": "# use arx_kw::gx::construct_nonce;\n# use arx_kw::AuthTag;\nlet mut t = AuthTag([0u8; 16]);\nfor i in (0u8..16u8) {\n    t.0[i as usize] = i;\n}\n// t contains [0x0, 0x1, 0x2 .. 0xf]\n\nlet nonce = construct_nonce(&t);\nassert_eq!(nonce,\n[0x61,0x72,0x62,0x69,0x74,0x72,0x47,0x58,0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0xb,0xc,0xd,0xe,0xf]);\n",
+        "id": "doc-37e1ff775b0df319-7",
+        "info": ""
+      },
+      {
+        "citation": {
+          "end_line": 88,
+          "source_id": "e0024",
+          "start_line": 72
+        },
+        "code": " extern crate hex;\n# extern crate anyhow;\n use hex::FromHex;\n# use arx_kw::{\n    AuthTag,\n    gx::construct_nonce,\n};\n\n# fn main() -> anyhow::Result<()> {\nlet authentication_tag = AuthTag(<[u8;16]>::from_hex(\"016325cf6a3c4b2e3b039675e1ccbc65\")?);\nlet nonce_expected = <[u8;24]>::from_hex(\"6172626974724758016325cf6a3c4b2e3b039675e1ccbc65\")?;\nlet nonce = construct_nonce(&authentication_tag);\nassert_eq!(nonce,nonce_expected);\n# Ok(())\n# }\n",
+        "id": "doc-37e1ff775b0df319-8",
+        "info": ""
+      }
+    ],
+    "warnings": [
+      "Example coverage is limited to collected Markdown code blocks and literal Rust doc attributes/comments. Unlabelled blocks are treated as Rust only in Rust documentation. Macros, cfg_attr, external includes, and generated documentation are not expanded; standalone example programs are still ordinary evidence.",
+      "e0005:7: nonliteral doc attribute was not expanded."
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+[dependencies.arx-kw]
+default-features = false
+features = ["g"]
+version = "=0.5.0"
+
+[dependencies.getrandom]
+default-features = false
+features = ["std"]
+version = "=0.4.3"
+
+[package]
+edition = "2024"
+name = "recipe-detached-tag"
+publish = false
+version = "0.0.0"
+
+[workspace]

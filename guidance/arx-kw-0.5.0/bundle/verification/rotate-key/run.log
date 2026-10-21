@@ -1,0 +1,4 @@
+   Compiling recipe-rotate-key v0.0.0 (/workspace/arx-kw/guidance/arx-kw-0.5.0/bundle/verification/rotate-key)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.21s
+     Running `guidance/arx-kw-0.5.0/bundle/verification/target/debug/recipe-rotate-key`
+Rewrapped the data key; the old wrapping key cannot open the new envelope.

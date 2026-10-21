@@ -1,0 +1,35 @@
+    Updating crates.io index
+     Locking 30 packages to highest Rust 1.99.1 compatible versions
+ Downloading crates ...
+  Downloaded arx-kw v0.5.0
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+    Checking typenum v1.20.1
+   Compiling syn v2.0.119
+    Checking hybrid-array v0.4.15
+    Checking crypto-common v0.2.2
+    Checking cmov v0.5.4
+    Checking ctutils v0.4.3
+    Checking const-oid v0.10.2
+    Checking cfg-if v1.0.5
+    Checking inout v0.2.5
+   Compiling syn v3.0.9
+    Checking cpufeatures v0.3.1
+   Compiling libc v0.2.191
+   Compiling thiserror v2.0.21
+   Compiling thiserror-impl v2.0.21
+   Compiling zeroize_derive v1.5.0
+    Checking zeroize v1.9.1
+    Checking block-buffer v0.12.1
+    Checking digest v0.11.3
+    Checking cipher v0.5.2
+   Compiling getrandom v0.4.3
+    Checking chacha20 v0.10.2
+    Checking sha2 v0.11.1
+    Checking hmac v0.13.0
+    Checking subtle v2.6.1
+    Checking arrayref v0.3.9
+    Checking arx-kw v0.5.0
+    Checking recipe-wrap-key v0.0.0 (/workspace/arx-kw/guidance/arx-kw-0.5.0/.bundle-stage-FkiHJ6/verification/wrap-key)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 17.10s

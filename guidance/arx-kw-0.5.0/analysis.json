@@ -1,0 +1,296 @@
+{
+  "summary": "Release-specific guidance for arx-kw 0.5.0: context-bound data-key wrapping, wrapping-key rotation, and detached-tag storage. Recipes use minimal features and OS-generated keys. Imported structured analysis based on the frozen published crate; no separate review is recorded. The guide covers these three tasks, not the entire API.",
+  "findings": [
+    {
+      "id": "context-wrapping",
+      "title": "Bind a data key to a stable application context",
+      "guidance": "For context-bound GX wrapping enable gx and envelope, import ArxKW, and use encrypt_envelope/decrypt_envelope. Preserve the exact context bytes: the envelope does not store them, and a changed context fails authentication. Contexts are limited to 4096 bytes. Envelopes add 24 bytes and never silently fall back to legacy blobs.",
+      "basis": "documented",
+      "features": [
+        "gx",
+        "envelope"
+      ],
+      "citations": [
+        {
+          "source_id": "e0003",
+          "start_line": 133,
+          "end_line": 165
+        },
+        {
+          "source_id": "e0016",
+          "start_line": 1,
+          "end_line": 33
+        }
+      ]
+    },
+    {
+      "id": "minimal-features",
+      "title": "Select only the required variant and envelope features",
+      "guidance": "Disable default features for a minimal dependency graph. gx,envelope provides context-bound GX; g alone provides raw detached wrapping. In 0.5.0 a variant alone no longer enables envelope methods/constants. HMAC and SHA-256 follow envelope; ChaCha and arrayref follow variants; only EX/GX enable XChaCha. zeroize, subtle, and thiserror remain mandatory. Rust 1.88 is the crate minimum.",
+      "basis": "documented",
+      "features": [
+        "gx",
+        "g",
+        "envelope"
+      ],
+      "citations": [
+        {
+          "source_id": "e0003",
+          "start_line": 55,
+          "end_line": 98
+        }
+      ]
+    },
+    {
+      "id": "secret-ownership",
+      "title": "Keep owned keys and recovered plaintext in erasing guards",
+      "guidance": "Use SecretKey for owned wrapping keys and prefer decrypt_envelope or decrypt_secret for drop-time erasure. Raw decrypt and decrypt_blob return Vec<u8>; immediately guard recovered plaintext with Zeroizing when using them. Do not print secret material. Drop-time wiping cannot erase borrowed inputs or guarantee removal of copied keys, registers, swap, or crash dumps.",
+      "basis": "documented",
+      "features": [],
+      "citations": [
+        {
+          "source_id": "e0003",
+          "start_line": 39,
+          "end_line": 49
+        },
+        {
+          "source_id": "e0027",
+          "start_line": 1,
+          "end_line": 117
+        },
+        {
+          "source_id": "e0006",
+          "start_line": 1,
+          "end_line": 29
+        }
+      ]
+    },
+    {
+      "id": "rotation",
+      "title": "Authenticate before rotating a wrapping key",
+      "guidance": "Open the existing envelope under the old wrapping key and context, then wrap the authenticated data key under the new wrapping key using the same context. Keep the intermediate plaintext guarded. Persist and verify the replacement before retiring the old key; production rotation also requires transactions, backups, and key identifiers.",
+      "basis": "documented",
+      "features": [
+        "gx",
+        "envelope"
+      ],
+      "citations": [
+        {
+          "source_id": "e0012",
+          "start_line": 1,
+          "end_line": 30
+        },
+        {
+          "source_id": "e0003",
+          "start_line": 185,
+          "end_line": 188
+        }
+      ]
+    },
+    {
+      "id": "detached-storage",
+      "title": "Use dedicated keys with raw detached storage",
+      "guidance": "G accepts a 32-byte wrapping key and at most 64 plaintext bytes. encrypt returns ciphertext and a separate 16-byte AuthTag. Retain both, reject every decryption error, and use a dedicated key for this protocol: the raw format has no version, variant, or application context.",
+      "basis": "documented",
+      "features": [
+        "g"
+      ],
+      "citations": [
+        {
+          "source_id": "e0006",
+          "start_line": 1,
+          "end_line": 29
+        },
+        {
+          "source_id": "e0003",
+          "start_line": 24,
+          "end_line": 37
+        },
+        {
+          "source_id": "e0003",
+          "start_line": 129,
+          "end_line": 131
+        }
+      ]
+    },
+    {
+      "id": "security-boundaries",
+      "title": "Use deterministic wrapping for high-entropy key material",
+      "guidance": "Generate keys with a cryptographically secure random source. Deterministic wrapping reveals repeated inputs within a key and context; it is not general-purpose encryption for passwords or predictable messages. E/G accept up to 64 bytes; EX/GX up to one MiB. Applications must provide replay/rollback protection and key lifecycle management. This crate has no established independent cryptographic audit.",
+      "basis": "documented",
+      "features": [],
+      "citations": [
+        {
+          "source_id": "e0003",
+          "start_line": 14,
+          "end_line": 49
+        },
+        {
+          "source_id": "e0017",
+          "start_line": 24,
+          "end_line": 41
+        }
+      ]
+    }
+  ],
+  "recipes": [
+    {
+      "id": "wrap-key",
+      "title": "Wrap a data key for a tenant",
+      "description": "Generate a data key and wrapping key from OS randomness; wrap with GX and verify recovery and wrong-context rejection. The example does not persist wrapping keys.",
+      "code": "//! Wrap a fresh data-encryption key with an application-specific context.\nuse arx_kw::{gx::GX, ArxKW, ArxKwError, ConstantTimeEq, SecretKey};\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    // A real application loads its wrapping key from protected persistent storage.\n    let mut wrapping_key = SecretKey::new([0; 32]);\n    let mut data_key = SecretKey::new([0; 32]);\n    getrandom::fill(&mut *wrapping_key)?;\n    getrandom::fill(&mut *data_key)?;\n\n    // Include protocol and tenant identifiers in the application context.\n    let context = b\"example.com/backups/v1/tenant-42\";\n    let envelope = GX::encrypt_envelope(&wrapping_key, &*data_key, context)?;\n    // Store the envelope, keeping the wrapping key separately protected.\n    let recovered = GX::decrypt_envelope(&wrapping_key, &envelope, context)?;\n    assert!(bool::from(recovered.as_ref().ct_eq(data_key.as_slice())));\n    assert!(matches!(\n        GX::decrypt_envelope(\n            &wrapping_key,\n            &envelope,\n            b\"example.com/backups/v1/tenant-43\"\n        ),\n        Err(ArxKwError::BadTags)\n    ));\n\n    println!(\n        \"Wrapped a 32-byte data key into a {}-byte envelope.\",\n        envelope.len()\n    );\n    println!(\"Recovered the key and rejected a different tenant context.\");\n    // Owned keys and recovered plaintext are wiped when dropped; never log them.\n    Ok(())\n}\n",
+      "default_features": false,
+      "features": [
+        "gx",
+        "envelope"
+      ],
+      "dependencies": {
+        "getrandom": {
+          "version": "=0.4.3",
+          "features": [
+            "std"
+          ],
+          "default_features": false
+        }
+      },
+      "citations": [
+        {
+          "source_id": "e0016",
+          "start_line": 1,
+          "end_line": 33
+        },
+        {
+          "source_id": "e0003",
+          "start_line": 71,
+          "end_line": 98
+        },
+        {
+          "source_id": "e0003",
+          "start_line": 139,
+          "end_line": 165
+        }
+      ]
+    },
+    {
+      "id": "rotate-key",
+      "title": "Rotate a wrapping key",
+      "description": "Authenticate an existing envelope, rewrap under a new wrapping key, and verify that the data key is unchanged and the old key is rejected. Durable storage and transactional rotation remain application responsibilities.",
+      "code": "//! Rewrap stored key material under a new wrapping key without changing the data key.\nuse arx_kw::{gx::GX, ArxKW, ArxKwError, ConstantTimeEq, SecretKey};\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let mut old_wrapping_key = SecretKey::new([0; 32]);\n    let mut new_wrapping_key = SecretKey::new([0; 32]);\n    let mut data_key = SecretKey::new([0; 32]);\n    getrandom::fill(&mut *old_wrapping_key)?;\n    getrandom::fill(&mut *new_wrapping_key)?;\n    getrandom::fill(&mut *data_key)?;\n    let context = b\"example.com/key-vault/v1/record-7\";\n    let old_envelope = GX::encrypt_envelope(&old_wrapping_key, &*data_key, context)?;\n\n    // Authenticate before rewrapping. The temporary plaintext wipes on scope exit.\n    let new_envelope = {\n        let plaintext = GX::decrypt_envelope(&old_wrapping_key, &old_envelope, context)?;\n        GX::encrypt_envelope(&new_wrapping_key, &plaintext, context)?\n    };\n    let recovered = GX::decrypt_envelope(&new_wrapping_key, &new_envelope, context)?;\n    assert!(bool::from(recovered.as_ref().ct_eq(data_key.as_slice())));\n    assert!(matches!(\n        GX::decrypt_envelope(&old_wrapping_key, &new_envelope, context),\n        Err(ArxKwError::BadTags)\n    ));\n\n    // Persist and verify the replacement before retiring the old wrapping key.\n    // Production rotation also needs transactions, backups, and a key identifier.\n    println!(\"Rewrapped the data key; the old wrapping key cannot open the new envelope.\");\n    Ok(())\n}\n",
+      "default_features": false,
+      "features": [
+        "gx",
+        "envelope"
+      ],
+      "dependencies": {
+        "getrandom": {
+          "version": "=0.4.3",
+          "features": [
+            "std"
+          ],
+          "default_features": false
+        }
+      },
+      "citations": [
+        {
+          "source_id": "e0012",
+          "start_line": 1,
+          "end_line": 30
+        },
+        {
+          "source_id": "e0003",
+          "start_line": 71,
+          "end_line": 98
+        },
+        {
+          "source_id": "e0003",
+          "start_line": 139,
+          "end_line": 165
+        }
+      ]
+    },
+    {
+      "id": "detached-tag",
+      "title": "Store ciphertext and tag separately",
+      "description": "Use raw G wrapping with a dedicated protocol key, guard recovered plaintext, and verify rejection of a modified tag.",
+      "code": "//! Store ciphertext and its authentication tag separately using only feature `g`.\nuse arx_kw::{g::G, ArxKW, ArxKwError, ConstantTimeEq, SecretKey, Zeroizing};\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let mut wrapping_key = SecretKey::new([0; 32]);\n    let mut data_key = SecretKey::new([0; 32]);\n    getrandom::fill(&mut *wrapping_key)?;\n    getrandom::fill(&mut *data_key)?;\n\n    // G accepts at most 64 bytes. Use a dedicated wrapping key for this protocol;\n    // this raw format carries no version, variant, or application context.\n    let (ciphertext, tag) = G::encrypt(&wrapping_key, &*data_key)?;\n    // For example, store these in separate database columns.\n    // Detached decryption returns a Vec, so explicitly guard its erasure.\n    let recovered = Zeroizing::new(G::decrypt(&wrapping_key, &ciphertext, &tag)?);\n    assert!(bool::from(recovered.as_slice().ct_eq(data_key.as_slice())));\n\n    let mut changed_tag = tag;\n    changed_tag.0[0] ^= 1;\n    assert!(matches!(\n        G::decrypt(&wrapping_key, &ciphertext, &changed_tag),\n        Err(ArxKwError::BadTags)\n    ));\n    println!(\n        \"Stored {} ciphertext bytes and a 16-byte tag; tampering was rejected.\",\n        ciphertext.len()\n    );\n    Ok(())\n}\n",
+      "default_features": false,
+      "features": [
+        "g"
+      ],
+      "dependencies": {
+        "getrandom": {
+          "version": "=0.4.3",
+          "features": [
+            "std"
+          ],
+          "default_features": false
+        }
+      },
+      "citations": [
+        {
+          "source_id": "e0006",
+          "start_line": 1,
+          "end_line": 29
+        },
+        {
+          "source_id": "e0003",
+          "start_line": 71,
+          "end_line": 98
+        }
+      ]
+    }
+  ],
+  "example_coverage": [
+    {
+      "example_id": "doc-403dabee035e1211-1",
+      "disposition": "skipped",
+      "recipe_ids": [],
+      "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage."
+    },
+    {
+      "example_id": "doc-403dabee035e1211-2",
+      "disposition": "supporting",
+      "recipe_ids": [
+        "wrap-key",
+        "rotate-key"
+      ],
+      "reason": "The envelope API and SecretKey ownership pattern support both runnable GX recipes; the recipes use OS randomness instead of fixture keys."
+    },
+    {
+      "example_id": "doc-0cc6763a3698d320-3",
+      "disposition": "skipped",
+      "recipe_ids": [],
+      "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage."
+    },
+    {
+      "example_id": "doc-0cc6763a3698d320-4",
+      "disposition": "skipped",
+      "recipe_ids": [],
+      "reason": "Legacy blob paper-vector demonstration is outside the selected context-wrapping, rotation, and detached-storage recipes; existing crate tests retain this coverage."
+    },
+    {
+      "example_id": "doc-087a7de4d36a294e-5",
+      "disposition": "skipped",
+      "recipe_ids": [],
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence."
+    },
+    {
+      "example_id": "doc-087a7de4d36a294e-6",
+      "disposition": "skipped",
+      "recipe_ids": [],
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence."
+    },
+    {
+      "example_id": "doc-37e1ff775b0df319-7",
+      "disposition": "skipped",
+      "recipe_ids": [],
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence."
+    },
+    {
+      "example_id": "doc-37e1ff775b0df319-8",
+      "disposition": "skipped",
+      "recipe_ids": [],
+      "reason": "Low-level nonce construction is outside these three application recipes; retained as frozen evidence."
+    }
+  ]
+}

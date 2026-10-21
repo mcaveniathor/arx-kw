@@ -11,7 +11,7 @@ description = "An implementation of the ARX-KW-8-2-4 Key Wrap constructions"
 repository = "https://github.com/mcaveniathor/arx-kw"
 readme = "README.md"
 documentation = "https://docs.rs/arx-kw"
-exclude = ["site/**", "dev/**", ".github/**", "fuzz/**"]
+exclude = ["site/**", "dev/**", ".github/**", "fuzz/**", "guidance/**"]
 
 [features]
 e = ["dep:chacha20", "dep:arrayref"]

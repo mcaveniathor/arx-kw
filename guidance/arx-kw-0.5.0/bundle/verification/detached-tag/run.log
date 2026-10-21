@@ -1,0 +1,8 @@
+   Compiling block-buffer v0.12.1
+   Compiling cipher v0.5.2
+   Compiling chacha20 v0.10.2
+   Compiling arx-kw v0.5.0
+   Compiling recipe-detached-tag v0.0.0 (/workspace/arx-kw/guidance/arx-kw-0.5.0/bundle/verification/detached-tag)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.69s
+     Running `guidance/arx-kw-0.5.0/bundle/verification/target/debug/recipe-detached-tag`
+Stored 32 ciphertext bytes and a 16-byte tag; tampering was rejected.

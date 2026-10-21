@@ -1,0 +1,27 @@
+   Compiling typenum v1.20.1
+   Compiling cmov v0.5.4
+   Compiling const-oid v0.10.2
+   Compiling zeroize v1.9.1
+   Compiling cfg-if v1.0.5
+   Compiling cpufeatures v0.3.1
+   Compiling thiserror v2.0.21
+   Compiling ctutils v0.4.3
+   Compiling libc v0.2.191
+   Compiling arrayref v0.3.9
+   Compiling subtle v2.6.1
+   Compiling hybrid-array v0.4.15
+   Compiling getrandom v0.4.3
+   Compiling block-buffer v0.12.1
+   Compiling crypto-common v0.2.2
+   Compiling inout v0.2.5
+   Compiling digest v0.11.3
+   Compiling cipher v0.5.2
+   Compiling sha2 v0.11.1
+   Compiling hmac v0.13.0
+   Compiling chacha20 v0.10.2
+   Compiling arx-kw v0.5.0
+   Compiling recipe-wrap-key v0.0.0 (/workspace/arx-kw/guidance/arx-kw-0.5.0/bundle/verification/wrap-key)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.03s
+     Running `guidance/arx-kw-0.5.0/bundle/verification/target/debug/recipe-wrap-key`
+Wrapped a 32-byte data key into a 56-byte envelope.
+Recovered the key and rejected a different tenant context.
