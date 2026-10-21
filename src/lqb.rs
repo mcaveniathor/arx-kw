@@ -1,79 +1,173 @@
-use chacha::ChaCha;
-use byteorder::{ByteOrder,LittleEndian};
-use chacha::KeyStream;
-use crate::{ArxKwError};
+use crate::ArxKwError;
+use chacha20::{
+    cipher::{KeyIvInit, StreamCipherCore},
+    variants::Ietf,
+    ChaChaCore, R8,
+};
+use zeroize::{Zeroize, ZeroizeOnDrop};
 
-/// A wrapper type that exists solely to allow instantiation of chacha::ChaCha structs with their private fields. The
-/// related functions return chacha::ChaCha 
-/// TODO see if the maintainers of chacha would accept the functions below (simply adding the counter parameter to the new_chacha* functions) in their library
-/// so I can do away with the unsafe blocks
-pub struct ChaChaLQB {
-    pub input: [u32; 16],
-    pub output: [u8; 64],
-    pub offset: u8,
-    pub rounds: u8,
-    pub large_block_counter: bool,
+/// ChaCha8 with a 64-bit counter, implemented using RustCrypto's public core API.
+#[derive(Zeroize, ZeroizeOnDrop)]
+pub struct ChaCha8Stream {
+    key: [u8; 32],
+    nonce: [u8; 8],
+    counter: u64,
+    block: [u8; 64],
+    offset: usize,
+    exhausted: bool,
 }
 
-/*
- * UNUSED
- *  
-/// Instantiates a ChaCha8 stream with the given key and lower quarter block (LQB) initialized to the 128-bit value
-/// passed as the parameter `lqb`, then  XORs the keystream with msg **in-place**, returning an error
-/// if the end of the stream is reached.
-fn _chacha8_encrypt_mut(key: &[u8;32], lqb: &[u8;16], mut msg: &mut [u8]) -> Result<(),ArxKwError> {
-    let (counter, nonce) = array_refs![lqb, 8,8]; // Array reference equivalent of (&lqb[..8], &lqb[8..16])
+impl ChaCha8Stream {
+    pub fn xor_read(&mut self, output: &mut [u8]) -> Result<(), ArxKwError> {
+        let buffered = 64 - self.offset;
+        let blocks = if self.exhausted {
+            0
+        } else {
+            (1u128 << 64) - u128::from(self.counter)
+        };
+        if output.len() as u128 > buffered as u128 + blocks * 64 {
+            return Err(ArxKwError::ChaChaError("ChaCha8 stream exhausted".into()));
+        }
+        for byte in output {
+            if self.offset == 64 {
+                // An IETF block's first nonce word occupies the original counter's
+                // high word. A fresh core for each block preserves the full DJB
+                // 64-bit counter, including carry and its final block.
+                let counter = self.counter.to_le_bytes();
+                let mut nonce = [0u8; 12];
+                nonce[..4].copy_from_slice(&counter[4..]);
+                nonce[4..].copy_from_slice(&self.nonce);
+                let mut core = ChaChaCore::<R8, Ietf>::new((&self.key).into(), (&nonce).into());
+                core.set_block_pos(u32::from_le_bytes([
+                    counter[0], counter[1], counter[2], counter[3],
+                ]));
+                core.write_keystream_block((&mut self.block).into());
+                self.offset = 0;
+                if let Some(next) = self.counter.checked_add(1) {
+                    self.counter = next;
+                } else {
+                    self.exhausted = true;
+                }
+            }
+            *byte ^= self.block[self.offset];
+            self.offset += 1;
+        }
+        Ok(())
+    }
+}
+
+#[cfg(any(feature = "e", feature = "g"))]
+pub fn chacha8_encrypt(key: &[u8; 32], lqb: &[u8; 16], msg: &[u8]) -> Result<Vec<u8>, ArxKwError> {
+    let (counter, nonce) = array_refs![lqb, 8, 8];
     let mut stream = new_chacha8_with_counter(key, *counter, *nonce);
-    stream.xor_read(&mut msg).map_err(|e| ArxKwError::ChaChaError(format!("Reached end of chacha stream: {:?} ",e)))
-}
-*/
-
-/// Instantiates a ChaCha stream with the given key and lower quarter block (LQB) initialized to the 128-bit value
-/// passed as the parameter `lqb`, then  XORs the keystream with msg, returning an error
-/// if the end of the stream is reached.
-pub fn chacha8_encrypt(key: &[u8;32], lqb: &[u8;16], msg: &[u8]) -> Result<Vec<u8>,ArxKwError> {
-    let mut tmp = msg.to_vec();
-    let (counter, nonce) = array_refs![lqb, 8,8]; // Array reference equivalent of (&lqb[..8], &lqb[8..16])
-    let mut stream = new_chacha8_with_counter(key, *counter, *nonce);
-    stream.xor_read(&mut tmp).map_err(|e| ArxKwError::ChaChaError(format!("Reached end of ChaCha stream: {:?} ",e)))?;
-    Ok(tmp)
+    let mut output = crate::memory::copy_secret(msg)?;
+    stream.xor_read(&mut output)?;
+    Ok(std::mem::take(&mut *output))
 }
 
-
-/// Creates a ChaCha8 stream with the lower quarter block (LQB) of the ChaCha matrix instantiated
-/// with two 32-bit little endian words read from `counter` and two from `nonce`. If counter
-/// is 0x00000000 then this is functionally identical to a typical ChaCha8 instance.
-pub fn new_chacha8_with_counter(key: &[u8; 32], counter: [u8;8], nonce: [u8; 8]) -> ChaCha {
-    let tmp = ChaChaLQB {
-        input: [
-            0x6170_7865, 0x3320_646e, 0x7962_2d32, 0x6b20_6574,
-            LittleEndian::read_u32(&key[ 0.. 4]),
-            LittleEndian::read_u32(&key[ 4.. 8]),
-            LittleEndian::read_u32(&key[ 8..12]),
-            LittleEndian::read_u32(&key[12..16]),
-            LittleEndian::read_u32(&key[16..20]),
-            LittleEndian::read_u32(&key[20..24]),
-            LittleEndian::read_u32(&key[24..28]),
-            LittleEndian::read_u32(&key[28..32]),
-
-            // These 64 bytes used for the counter would typically be set to zero in a normal instantiation of ChaCha20,
-            // but ARX-KW operates by treating the nonce and counter as a single 128 bit number and
-            // instantiating the lower quarter block (LQB), or last four words of the 16-word ChaCha
-            // matrix (used for the counter and nonce)
-            LittleEndian::read_u32(&counter[ 0.. 4]), // LQB
-            LittleEndian::read_u32(&counter[ 4.. 8]), // LQB
-            LittleEndian::read_u32(&nonce[ 0.. 4]), // LQB
-            LittleEndian::read_u32(&nonce[ 4.. 8]), // LQB
-        ],
-        output: [0; 64],
-        offset: 255,
-        large_block_counter: true,
-        rounds: 8, // ChaCha8
-    };
-    let cc: ChaCha = unsafe {
-        std::mem::transmute(tmp)
-    };
-    cc
+pub const fn new_chacha8_with_counter(
+    key: &[u8; 32],
+    counter: [u8; 8],
+    nonce: [u8; 8],
+) -> ChaCha8Stream {
+    ChaCha8Stream {
+        key: *key,
+        nonce,
+        counter: u64::from_le_bytes(counter),
+        block: [0; 64],
+        offset: 64,
+        exhausted: false,
+    }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chacha::KeyStream;
 
+    #[test]
+    fn matches_public_chacha8_across_blocks_and_chunk_sizes() {
+        let key = [0x42; 32];
+        let nonce = [0x19; 8];
+        let mut expected = vec![0x5a; 257];
+        chacha::ChaCha::new_chacha8(&key, &nonce)
+            .xor_read(&mut expected)
+            .unwrap();
+        let mut actual = vec![0x5a; 257];
+        let mut stream = new_chacha8_with_counter(&key, [0; 8], nonce);
+        for part in actual.chunks_mut(17) {
+            stream.xor_read(part).unwrap();
+        }
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn counter_carries_into_high_word() {
+        use chacha::SeekableKeyStream;
+        let key = [0x42; 32];
+        let nonce = [0x19; 8];
+        let counter = u64::from(u32::MAX);
+        let mut expected = [0u8; 129];
+        let mut reference = chacha::ChaCha::new_chacha8(&key, &nonce);
+        reference.seek_to(counter * 64).unwrap();
+        reference.xor_read(&mut expected).unwrap();
+        let mut actual = [0u8; 129];
+        new_chacha8_with_counter(&key, counter.to_le_bytes(), nonce)
+            .xor_read(&mut actual)
+            .unwrap();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn last_counter_block_is_usable_without_wrapping() {
+        let mut stream = new_chacha8_with_counter(&[0; 32], u64::MAX.to_le_bytes(), [0; 8]);
+        let mut too_long = [0x5a; 65];
+        assert!(stream.xor_read(&mut too_long).is_err());
+        assert_eq!(too_long, [0x5a; 65]);
+        let mut actual = [0u8; 64];
+        stream.xor_read(&mut actual[..1]).unwrap();
+        stream.xor_read(&mut actual[1..]).unwrap();
+        let mut reference = [
+            0x6170_7865,
+            0x3320_646e,
+            0x7962_2d32,
+            0x6b20_6574,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            u32::MAX,
+            u32::MAX,
+            0,
+            0,
+        ];
+        chacha::permute_and_add(8, &mut reference);
+        let expected: Vec<u8> = reference
+            .iter()
+            .flat_map(|word| word.to_le_bytes())
+            .collect();
+        assert_eq!(actual.as_slice(), expected);
+        stream.xor_read(&mut []).unwrap();
+        assert!(stream.xor_read(&mut [0; 1]).is_err());
+    }
+}
+
+#[cfg(test)]
+mod zeroization_tests {
+    use super::*;
+    #[test]
+    fn owned_stream_state_is_wiped() {
+        fn requires_wipe<T: ZeroizeOnDrop>() {}
+        requires_wipe::<ChaCha8Stream>();
+        let mut stream = new_chacha8_with_counter(&[0x42; 32], [0; 8], [0x24; 8]);
+        stream.xor_read(&mut [0; 1]).unwrap();
+        stream.zeroize();
+        assert_eq!(stream.key, [0; 32]);
+        assert_eq!(stream.block, [0; 64]);
+        assert_eq!(stream.nonce, [0; 8]);
+    }
+}
