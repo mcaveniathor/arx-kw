@@ -1,209 +1,167 @@
 # ARX-KW
 
-[![crates.io](https://img.shields.io/crates/v/arx-kw.svg)](https://crates.io/crates/arx-kw)
-[![Docs.rs](https://docs.rs/arx-kw/badge.svg)](https://docs.rs/arx-kw)
-[![Rust Report Card](https://rust-reportcard.xuri.me/badge/github.com/mcaveniathor/arx-kw)](https://rust-reportcard.xuri.me/report/github.com/mcaveniathor/arx-kw)
-[![dependency status](https://deps.rs/crate/arx-kw/0.3.0/status.svg)](https://deps.rs/crate/arx-kw/0.3.0)
-[![Build Status](https://www.travis-ci.com/mcaveniathor/arx-kw.svg?branch=main)](https://www.travis-ci.com/mcaveniathor/arx-kw)
-[![codecov](https://codecov.io/gh/mcaveniathor/arx-kw/branch/main/graph/badge.svg?token=OVCFNGQDSH)](https://codecov.io/gh/mcaveniathor/arx-kw)
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+Rust implementations of the ARX-KW-8-2-4 key-wrap constructions from
+[Satō Shinichi's paper](https://ia.cr/2020/059). These combine SipHash-2-4
+with 128-bit output and ChaCha8 or XChaCha8 to wrap secret key material.
 
----
+## Security and input limits
 
-This library features Rust implementations of the ARX-KW family of novel [Key Wrap](https://wikipedia.org/wiki/Key_Wrap) constructions.
+ARX-KW is deterministic: the same key and plaintext produce the same output.
+Use it for high-entropy secret keys. Repeated inputs remain recognizable;
+this is not a general-purpose encryption API for passwords, messages, or
+other predictable data. For new integrations use the versioned envelope API,
+which binds an application context through HKDF-SHA-256 and identifies the
+format version and variant. Legacy blobs remain available for compatibility;
+they require applications to manage protocol separation themselves.
 
-The version number for this crate will be incremented in compliance with [Semantic Versioning](https://semver.org/). 
+| Feature / type | Wrapping key | Maximum plaintext | Cipher |
+| --- | --- | --- | --- |
+| `e` / `E` | 48 bytes | 64 bytes | ChaCha8 |
+| `g` / `G` | 32 bytes | 64 bytes | ChaCha8 |
+| `ex` / `EX` | 48 bytes | 1 MiB | XChaCha8 |
+| `gx` / `GX` | 32 bytes | 1 MiB | XChaCha8 |
 
----
+All four features are enabled by default. EX/GX enforce a one-MiB input limit
+before hashing, key derivation, or output allocation. Output allocations use fallible reservation and return
+`AllocationFailed` on failure. E/G bounds exclude the authentication tag.
+Empty plaintexts are accepted. Every authentication tag is 16 bytes; blobs are `tag || ciphertext`,
+so a wrapped 32-byte key occupies 48 bytes. Blobs shorter than 16 bytes return
+an error. Decryption releases plaintext only after checking the tag with
+`subtle::ConstantTimeEq`.
 
-# Background
+This implementation has not been established by this review to have an
+independent cryptographic audit. Owned stream state, SipHash state, derived
+subkeys, KDF chaining buffers,
+and rejected plaintext buffers are wiped with `zeroize`. Use `SecretKey`
+for owned wrapping keys and `decrypt_envelope` or `decrypt_secret` for
+plaintext with drop-time erasure and redacted debug output. Legacy `decrypt`
+and `decrypt_blob` return ordinary vectors whose erasure is the caller's
+responsibility, as is the erasure of borrowed input or copied keys. Wiping
+owned storage cannot guarantee erasure of compiler-created copies, CPU
+registers, provider-internal scratch, swap, or crash dumps. Constant-time tag
+comparison does not establish whole-program constant-time behavior.
 
-ARX-KW was first presented in [this paper](https://ia.cr/2020/059) written by Satō Shinichi and submitted to the IACR Cryptology ePrint Archive in January 2020. As the name
-suggests, these constructions make extensive use of add-rotate-xor algorithms: each of the four
-variants specified involves both the [SipHash-2-4](https://wikipedia.org/wiki/SipHash) pseudorandom function with 128-bit output and
-a stream cipher from the [ChaCha](https://wikipedia.org/wiki/Salsa20) family of stream ciphers.
+## Installation
 
-ARX-KW is a cipher for deteministic, authenticated encryption which aims to provide strong
-authenticity and confidentiality while minimizing the storage overhead and simplicity of use
-when compared to existing constructions using the ChaCha cipher which require either keeping state for a nonce and 
-a block counter or having a substantial storage overhead in order to manage the nonce
-statelessly.
-
-ARX-KW has a static overhead of 128 bits for each of its four variants without the need to keep
-state for the nonce used by ChaCha, making the storage overhead only 50% for a 256-bit key.
-
----
-
-# Use
-
-## Features
-
-Use the `nightly` feature to enable SIMD parallelization of the ChaCha computations (nightly Rust required):
-
-*Cargo.toml*
-
-```toml
-[dependencies]
-arx-kw = {version = "0.3", features = ["nightly"]}
-```
-#### Variants
-
-The four variants are gated under individual features ("e", "g", "ex", and "gx") for conditional compilation if not all
-are going to be used. All are enabled by default, but for example if you only want to use
-the `gx::GX` variant:
-
-*Cargo.toml*
+Requires Rust 1.88 or later (including benchmark dependencies).
 
 ```toml
 [dependencies]
-arx-kw = { version = "0.3", default-features=false, features=["gx"] }
+arx-kw = "0.4"
 ```
 
+To enable only GX:
 
-## When
+```toml
+[dependencies]
+arx-kw = { version = "0.4", default-features = false, features = ["gx"] }
+```
 
-As noted above, the ARX-KW constructions are **Key Wrap** algorithms, designed and intended to
-protect other cryptographic keys using [symmetric encryption](https://wikipedia.org/wiki/Symmetric_encryption). It is important to note that ARX-KW, like all Key Wrap constructions, 
-was designed with the expectation that its input data is highly [entropic](https://wikipedia.org/wiki/Entropic_security), as is the case with secret cryptographic keys. This is because it is
-a [deterministic encryption](https://wikipedia.org/wiki/Deterministic_encryption) scheme and
-will always yield the same ciphertext output for a given input; if used to encrypt low-entropy
-data (as with general-purpose encryption schemes), it is vulnerable to "leakage", described here:
+## Example
 
-> Deterministic encryption can leak information to an eavesdropper, who may recognize known ciphertexts. For example, when an adversary learns that a given ciphertext corresponds to some interesting message, they can learn something every time that ciphertext is transmitted. To gain information about the meaning of various ciphertexts, an adversary might perform a statistical analysis of messages transmitted over an encrypted channel, or attempt to correlate ciphertexts with observed actions (e.g., noting that a given ciphertext is always received immediately before a submarine dive). If used to store secret key material (by nature high entropy), this is not an issue as an attacker gains no information about the key encapsulated within. 
-
----
-
-## How
-
-Each public module of this crate contains a struct corresponding to one of the four specified
-ARX-KW-8-2-4 variants: ARX-8-2-4-`E`, ARX-8-2-4-`G`, ARX-8-2-4-`EX`, and ARX-8-2-4-`GX`. If you're not
-sure which to use, `gx::GX` is recommended. The functionality is provided by the `ArxKW` trait,
-so that will need to be in scope to use the `ArxKW::encrypt`/`ArxKW::encrypt_blob` and `ArxKW::decrypt`/`ArxKW::decrypt_blob` methods. The
-`ConstantTimeEq` trait from the `subtle` crate is re-exported by this crate and is implemented
-on the `AuthTag` type as well as those covered by the blanket implementations `subtle`
-provides.
-
-- Encryption and decryption of secret plaintext can be performed using the `ArxKW::encrypt` 
-and `ArxKW::decrypt` methods, which remove the need to keep track of nonces and how to
-store/transport them. These two methods treat authentication tags and ciphertexts as separate
-entities; if you need the flexibility of handling them separately, use them -- otherwise, the
-`ArxKW::encrypt_blob` and `ArxKW::decrypt_blob` methods described below offer a further layer of abstraction and
-ease of use at no performance cost.
-
-- The `ArxKW::encrypt_blob` and `ArxKW::decrypt_blob` methods further improve ease of use by allowing the
-user to treat a `Vec<u8>` consisting of an authentication tag  followed by the corresponding
-ciphertext as a single opaque blob. Consequently, not only is the issue of nonce management
-addressed by ARX-KW, but management of authentication tags as well! The blob can be stored or
-transported in one piece, saving headache, database retrievals, and making it easy to perform
-key wrapping in a safe and simple way.
-
-`Eq` and `PartialEq` are by design *not* implemented for `AuthTag` to discourage equality
-checking that is not O(1), but the internal `[u8;16]` is public should you want to live 
-
-
-
-
-
-
-<br><br><br><br><br>
-
-Ḑ̷͉͎̺̳̭͖̗̦̪͓̂͗͒̓̅̆̋̐́̓̓̎̊͐̍̂̈͂̇͆̇͐̉̈̄̈́̈́̓̓̾͒̕͠à̸̢̛̤̠̺̩̱̤̭̪̮̙͈̱̀̍͂̋̓̓͊̈́͊̋̀̾͌͂͘͘̚n̶̡̡̢̪̼̲̫̪̯͖̟͕͚̬̠̥̫̱̮̖̼̪͚̜͙̥̬̙̪̩̮̞̰̼̲̭̏̀̀ģ̸̨̧̳̟͙͙̳̘̥͖̮̼̻͍̯̦̖͋͆̃̏͛̒̌̅͊̃̿̄̒̋͜͜͝͝ͅ ̸̧̟̼͉̳̰̥̮̙͈͖͙͎͇̙͍͚͔͒͋͋̋̒̚͠ͅͅͅè̵̡̘̲̪͔̪̥̹̟̾̅̓͛̐̐̽̅͌̊̓̔̍̓̿̊̆̂̈́͑̽̅̿̚͝͝r̵̛̭̺̠̙̞̫̗̞̪̗̹͎͌͌͌̒̏̌̅̇̉̑̂͋̅̅̀̔̉̾̋̅̏̓͘̚ờ̸̢̡̢̥̟̗̘͉̠̣͕̮͈͍͉̳̫̲̖͖̻̝̯̟͂̊̈́͑̇́͛̏͜͠u̷̎͋͂̽̉͒́̈́̑̋́̌͂̿̋̆́͜͝͝͝s̸̡̡̡̞̞͇͖̖͍̝͖̣̪͓͖̥̟͙̫̪̗͙̯̞͍̽̃̆̒̐̐̊̓̾̚̚ͅĺ̴͕͖͎̣̞͕̙̹̓͒y̷̢̠̠͇͉̘̠̩̳̲͗̑͐̿̿̐͗͊̀̽̀͐̀̿̔̈́͘͝͝
-
-br><br><br><br><br>
-
----
-
-### Example Usage
+The following uses the GX test vector from the paper. Generate wrapping keys
+with a cryptographically secure random source in applications; the fixed key
+here is for demonstration only.
 
 ```rust
-extern crate hex;
+# #[cfg(feature = "gx")]
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
+use arx_kw::{gx::GX, ArxKW};
 use hex::FromHex;
-extern crate arx_kw;
-use arx_kw::{
-  ArxKW,
-  gx::GX,
-  ConstantTimeEq, // From the subtle crate, allows for equality checking in constant time
-  // (impl'd for AuthTag and re-exported by this crate)
-  assert_ct_eq,
-};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-// Encrypt a key using ARX-KW-8-2-4-GX with the encrypt_blob method
- // The values used here are from the test vectors in the original ARX-KW paper.
+let key = <[u8; 32]>::from_hex(
+    "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+)?;
+let plaintext = <[u8; 32]>::from_hex(
+    "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+)?;
+let expected = hex::decode(
+    "016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3",
+)?;
+let blob = GX::encrypt_blob(&key, &plaintext)?;
+assert_eq!(blob, expected);
+assert_eq!(GX::decrypt_blob(&key, &blob)?, plaintext);
+# Ok(())
+# }
+# #[cfg(not(feature = "gx"))] fn main() {}
+```
 
- /* 
-  * Inputs
-  */ 
-// The encryption key we are using to wrap the plaintext secret key
- let key = <[u8; 32]>::from_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")?; 
- // The plaintext secret key we want to store/transport securely
- let plaintext = <[u8; 32]>::from_hex("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")?; 
+Add `hex = "0.4.3"` to run this example. Import `ArxKW` to call the methods.
+Use `encrypt` and `decrypt` when storing ciphertext and `AuthTag` separately.
+Treat every decryption error as a failure; do not use unauthenticated data.
 
- /*
-  * Expected output: 
-  * A Vec<u8> containing the authentication tag followed by the ciphertext containing the
-  * wrapped key. We can treat this as an opaque blob when using the encrypt_blob and decrypt_blob
-  * methods, meaning we don't have to manually manage authentication tags or nonces.
-  */
- let blob_expected = <[u8; 48]>::from_hex("016325cf6a3c4b2e3b039675e1ccbc652f83f391c97f3606ccd5709c6ee15d66cd7e65a2aeb7dc3066636e8f6b0d39c3")?;
+## Versioned envelopes and secret ownership
 
- /*
-  * Key wrapping performed in one line, simply passing the 
-  * encryption key and the plaintext to be encrypted.
-  */
-  let blob = GX::encrypt_blob(&key, &plaintext)?; 
-  assert_ct_eq!(blob, &blob_expected);
+For new applications, use a stable, protocol-specific context and the envelope
+methods. The fixed key in this example is a test fixture; applications must
+supply cryptographically random wrapping keys.
 
- /*
-  * Decryption likewise is done in one line, passing the key and the blob to be decrypted.
-  * The authentication tag is checked to match the ciphertext
-  * during decryption and will return an error if the tags do not match.
-  * Returns the decrypted plaintext if successful, otherwise an error.
-  */
-  let decrypted_plaintext = GX::decrypt_blob(&key, &blob)?;
-  assert_ct_eq!(plaintext, &decrypted_plaintext);
-  Ok(())
- }
- ```
+```rust
+# #[cfg(feature = "gx")]
+# fn main() -> Result<(), arx_kw::ArxKwError> {
+use arx_kw::{gx::GX, ArxKW, SecretKey};
+let key = SecretKey::new([0x42; 32]); // Test fixture only.
+let context = b"example.com/key-storage/v1";
+let envelope = GX::encrypt_envelope(&key, b"example key material", context)?;
+let plaintext = GX::decrypt_envelope(&key, &envelope, context)?;
+assert_eq!(plaintext.as_ref(), b"example key material");
+// `key` and `plaintext` are wiped when they leave scope.
+# Ok(())
+# }
+# #[cfg(not(feature = "gx"))] fn main() {}
+```
 
+Envelope v1 is `ARXK || 01 || variant || 0000 || tag || ciphertext`:
+the first eight bytes contain magic, version, variant (E=1, G=2, EX=3, GX=4),
+and two reserved zero bytes. Context bytes are not stored; callers must
+supply exactly the same context (at most 4096 bytes) when opening an envelope.
+The per-context wrapping key is derived using RFC 5869 HKDF-SHA-256, with
+salt `ARX-KW/context/v1`, the original wrapping key as input key material,
+and `header || context` as info. Its length matches the original key length.
+This binds the header and context while preserving the paper's primitive
+for legacy blobs. Envelopes add 24 bytes in total. Unknown versions, variants,
+or reserved flags fail closed; the API never falls back to legacy decryption.
+Use one format explicitly at each storage boundary. Determinism still reveals
+repeated inputs within the same key and context.
 
-# Benchmarks
+## Development
 
-The benches directory contains encrypt and decrypt benchmarks for each ARX-KW variant. This crate uses the `criterion` crate
-for benchmarking, so the benchmarks can be run on stable or nightly Rust and offer more detailed output.
+```sh
+cargo build
+cargo test
+cargo test --no-default-features --features gx
+cargo doc --no-deps
+cargo bench
+```
 
+The unit tests include the paper's vectors for all four variants, plus
+malformed-input, authentication, boundary, and stream-counter regressions.
+Documentation examples run as doctests. Benchmarks use Criterion; use
+`cargo bench --bench gx` for one variant. No service or credentials are needed.
+`Cargo.lock` is intentionally ignored for this library; after initial resolution,
+use `--locked` to retain the local resolution.
 
-## My Benchmarks
+## Migrating from 0.3
 
-Conducted using the `criterion` crate on my machine using the `nightly` feature with a Ryzen 1700 @ 3.8 GHz and 8GB of RAM at 3000MHz. 
- - [Benchmarks](https://mcaveniathor.github.io/arx-kw/criterion/reports/index.html)
+Version 0.4 updates all direct dependencies, including RustCrypto `chacha20`
+0.10, `thiserror` 2, and Criterion 0.8. The legacy `chacha`, `byteorder`, and
+`siphasher` runtime dependencies have been removed. SipHash-2-4-128 uses
+zeroizing state and is checked against the independent `siphasher` oracle.
+Published paper-vector outputs are unchanged. EX/GX now reject inputs above
+one MiB, including legacy ciphertexts previously accepted at larger sizes;
+plan migration of such records using the earlier release before upgrading.
 
----
+`ArxKwError::BadTags` is now a unit variant: authentication errors no longer
+expose a computed tag in their fields, display text, or debug output.
+`InvalidBlobLength(usize)` reports blobs missing a complete tag. Update
+exhaustive error matches accordingly. Custom `ArxKW` implementations must
+provide `VARIANT_ID` and key types supporting `Copy`, `Zeroize`, `AsRef`, and
+`AsMut`. New errors cover allocation, context, and envelope validation failures. The old `nightly` SIMD feature has been
+removed because the upstream implementation relies on obsolete compiler SIMD
+interfaces; the supported workflow uses stable Rust.
 
-## Prefer to run your own?
+## References and license
 
-#### To run benchmarks without SIMD:
-
-`cargo bench`
-
-#### To run benchmarks with SIMD:
-
-`cargo --features nightly bench`
-
-If you run the benchmarks without the nightly feature and then with it, the output will show you the change in execution time, for those curious.
-
----
-
-# Tests
-
-Tests for encryption and decryption are provided for each of the four variants and use the test vectors from the original ARX-KW paper, along with a couple of doctests. They can be run using `cargo test`
-
----
-
-# Documentation
-
-Documentation for the latest crate version is available here:
-- [docs.rs](https://docs.rs/arx-kw)
-
-Or for the latest commit to the main branch of this repository:
-- [Main Branch](https://mcaveniathor.github.io/arx-kw/doc/arx_kw/index.html)
+- [ARX-KW paper and test vectors](https://ia.cr/2020/059)
+- [API documentation](https://docs.rs/arx-kw)
+- [MIT license](https://github.com/mcaveniathor/arx-kw/blob/main/LICENSE)
