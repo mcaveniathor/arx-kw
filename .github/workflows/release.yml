@@ -121,7 +121,8 @@ jobs:
     needs: verify
     permissions:
       actions: read
-      contents: read
+      # Required by the reusable workflow's declared upload job, even when skipped.
+      contents: write
       id-token: write
     # The verifier requires the generator's full semantic-version tag.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0

@@ -7,9 +7,9 @@ with 128-bit output and ChaCha8 or XChaCha8 to wrap secret key material.
 [Project website](https://mcaveniathor.github.io/arx-kw/) ·
 [API reference](https://docs.rs/arx-kw) · [Changelog](https://github.com/mcaveniathor/arx-kw/blob/main/CHANGELOG.md)
 
-Version 0.4.0 is a release candidate and has not been published to crates.io.
-The `0.4` dependency examples below apply after publication. Until then, build
-from this checkout or use `arx-kw = { path = "../arx-kw" }` in a local project.
+Version 0.4.0 requires Rust 1.88 or newer. See the
+[changelog](https://github.com/mcaveniathor/arx-kw/blob/main/CHANGELOG.md) for
+migration notes and [crates.io](https://crates.io/crates/arx-kw) for published versions.
 
 ## Security and input limits
 
