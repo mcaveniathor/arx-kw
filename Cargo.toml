@@ -1,6 +1,6 @@
 [package]
 name = "arx-kw"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["Thor McAvenia <mcaveniathor@gmail.com>"]
 edition = "2018"
 rust-version = "1.88"

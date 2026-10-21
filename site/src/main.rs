@@ -104,7 +104,7 @@ impl Site {
             .child(el::div().class("hero-actions")
                 .child(ButtonLink::new("Read the guide →", self.url("guide.html")).variant(Variant::Primary))
                 .child(ButtonLink::new("Explore the API", self.url("doc/arx_kw/index.html"))))
-            .child(el::p().class("release-note").text("0.4.0 · Rust 1.88+ · MIT"));
+            .child(el::p().class("release-note").text("0.5.0 · Rust 1.88+ · MIT"));
         let example = Card::new().class("example")
             .header(el::div().class("example-title").text("WRAP WITH A CONTEXT").child(el::span().text("Rust")))
             .child(el::pre().attr("tabindex", "0").child(el::code().text("use arx_kw::{gx::GX, ArxKW};\n\nlet envelope = GX::encrypt_envelope(\n    &wrapping_key,\n    &key_material,\n    b\"example.com/storage/v1\",\n)?;")))

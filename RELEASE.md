@@ -1,7 +1,7 @@
 # Releasing ARX-KW
 
-Version 0.4.0 is published. For the next release, review the changelog, README
-migration section, and implementation review before tagging. Release
+This guide covers the 0.5.0 release. Review the changelog, README migration
+section, and implementation review before tagging. Release
 preparation does not publish a crate or push a tag.
 
 ## One-time repository setup
@@ -89,9 +89,9 @@ an environment approval. CI continues to test current stable Rust and the MSRV.
 
 ## Tag and publish
 
-The unreleased optional `envelope` feature changes explicitly reduced-feature
-builds. Release that change in a new breaking version (for example, 0.5.0),
-not as a 0.4.x patch. Published 0.4.0 and its tag remain immutable.
+Version 0.5.0 makes `envelope` optional, changing explicitly reduced-feature
+builds. This is a new breaking version, rather than a 0.4.x patch. Published
+0.4.0 and its tag remain immutable.
 
 1. Update `Cargo.toml`, changelog, release status in the README, and landing-page
    version label together. Finalize the release notes and any unreleased label.
@@ -161,12 +161,12 @@ from its verified distribution or build its tagged source. Download the crate
 and signed provenance from the same GitHub release, then run:
 
 ```sh
-gh release download v0.4.0 --repo mcaveniathor/arx-kw \
-  --pattern 'arx-kw-0.4.0.crate' --pattern arx-kw.intoto.jsonl
-slsa-verifier verify-artifact arx-kw-0.4.0.crate \
+gh release download v0.5.0 --repo mcaveniathor/arx-kw \
+  --pattern 'arx-kw-0.5.0.crate' --pattern arx-kw.intoto.jsonl
+slsa-verifier verify-artifact arx-kw-0.5.0.crate \
   --provenance-path arx-kw.intoto.jsonl \
   --source-uri github.com/mcaveniathor/arx-kw \
-  --source-tag v0.4.0 \
+  --source-tag v0.5.0 \
   --builder-id 'https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0'
 ```
 

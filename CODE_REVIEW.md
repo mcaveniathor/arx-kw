@@ -84,3 +84,24 @@ entries, dirty/wrong source archives, registry mismatches, and non-404 network
 failures. Both library and website dependency audits pass locally. Hosted
 Linux/macOS/Windows CI, Pages deployment, and crates.io OIDC authorization
 remain unexecuted here; their required service settings are in RELEASE.md.
+
+## 0.5.0 examples and feature selection
+
+The follow-up change keeps the existing cipher, SipHash, KDF, and envelope
+formats intact. Blob parsing copies the bounded tag directly so the shared
+trait no longer needs `arrayref` without a built-in variant. Cipher and array
+helpers follow variant features; HMAC/SHA-256 and envelope methods/constants
+follow default-enabled `envelope`. Zeroization and constant-time comparison
+remain mandatory. Explicitly reduced-feature consumers must opt into envelope
+APIs, so this change uses a new breaking version.
+
+The three runnable examples obtain wrapping and data keys from OS randomness,
+propagate entropy errors, retain plaintext in zeroizing storage, and avoid
+printing secrets. They verify context rejection, key rotation, and detached-tag
+tampering. The examples demonstrate wrapping operations, not durable key
+storage or transactional rotation.
+
+Checks cover raw and envelope variants, envelope-only and no-feature builds,
+actual runtime dependency graphs, MSRV, documentation, and example execution
+across the CI platforms. This implementation review does not constitute an
+independent cryptographic audit.

@@ -7,7 +7,7 @@ with 128-bit output and ChaCha8 or XChaCha8 to wrap secret key material.
 [Project website](https://mcaveniathor.github.io/arx-kw/) ·
 [API reference](https://docs.rs/arx-kw) · [Changelog](https://github.com/mcaveniathor/arx-kw/blob/main/CHANGELOG.md)
 
-Version 0.4.0 requires Rust 1.88 or newer. See the
+Version 0.5.0 requires Rust 1.88 or newer. See the
 [changelog](https://github.com/mcaveniathor/arx-kw/blob/main/CHANGELOG.md) for
 migration notes and [crates.io](https://crates.io/crates/arx-kw) for published versions.
 
@@ -54,20 +54,20 @@ Requires Rust 1.88 or later (including benchmark dependencies).
 
 ```toml
 [dependencies]
-arx-kw = "0.4"
+arx-kw = "0.5"
 ```
 
 To enable only GX:
 
 ```toml
 [dependencies]
-arx-kw = { version = "0.4", default-features = false, features = ["gx"] }
+arx-kw = { version = "0.5", default-features = false, features = ["gx"] }
 ```
 
-## Optional dependencies (development checkout)
+## Optional dependencies
 
-The following feature split is unreleased; published 0.4.0 includes the context
-KDF unconditionally. Default builds keep the same API and byte formats.
+Version 0.5 makes the context KDF optional; 0.4.0 included it unconditionally.
+Default builds keep the same API and byte formats.
 
 | Feature | Optional runtime dependencies / capabilities |
 | --- | --- |
@@ -76,18 +76,18 @@ KDF unconditionally. Default builds keep the same API and byte formats.
 | `envelope` | `hmac` and `sha2`; context-bound envelope methods and constants |
 
 For a minimal raw GX build, disable default features and enable only `gx`.
-For context-bound wrapping from this checkout, enable both features:
+For context-bound wrapping, enable both features:
 
 ```toml
 [dependencies]
-arx-kw = { path = "../arx-kw", default-features = false, features = ["gx", "envelope"] }
+arx-kw = { version = "0.5", default-features = false, features = ["gx", "envelope"] }
 ```
 
 **Migration for reduced-feature builds:** unlike 0.4.0, enabling a variant alone
 no longer provides `encrypt_envelope`, `decrypt_envelope`,
 `ENVELOPE_HEADER_LENGTH`, or `MAX_CONTEXT_LENGTH`. Add `envelope` when using
-those APIs. This feature-selection change requires a breaking release before
-publication. The default feature set keeps those APIs available.
+those APIs when migrating to 0.5. The default feature set keeps those APIs
+available.
 
 Without any features, the crate provides shared types and the `ArxKW` trait,
 with no built-in cipher variant. `zeroize`, `subtle`, and `thiserror` remain
@@ -164,7 +164,7 @@ repeated inputs within the same key and context.
 
 ## Runnable programs
 
-Run these examples from the development checkout. Each uses OS randomness,
+Run these examples from a checkout of this release. Each uses OS randomness,
 checks recovery and rejection cases, and prints only sizes or status messages.
 They do not persist keys or write secret material to disk.
 
@@ -184,7 +184,7 @@ The programs demonstrate the wrapping step, not complete key-management
 systems. Production applications must protect and retain wrapping keys, choose
 stable contexts, and commit rotations transactionally. Detached storage needs
 a dedicated key for protocol separation because it has no context field.
-See the [example source programs](https://github.com/mcaveniathor/arx-kw/tree/main/examples).
+See the [example source programs](https://github.com/mcaveniathor/arx-kw/tree/v0.5.0/examples).
 
 ## Development
 
