@@ -28,6 +28,7 @@ jobs:
     outputs:
       version: ${{ steps.package.outputs.version }}
       prerelease: ${{ steps.package.outputs.prerelease }}
+      subjects: ${{ steps.subjects.outputs.hashes }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -102,6 +103,10 @@ jobs:
       - name: Record verified archive and release notes
         id: package
         run: python dev/release.py prepare --tag "$RELEASE_TAG"
+      - name: Export verified crate digest for isolated provenance generation
+        id: subjects
+        working-directory: target/release-artifacts
+        run: echo "hashes=$(base64 -w0 SHA256SUMS)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-package
@@ -109,9 +114,23 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  provenance:
+    name: Generate isolated SLSA provenance
+    needs: verify
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    # The verifier requires the generator's full semantic-version tag.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: ${{ needs.verify.outputs.subjects }}
+      provenance-name: arx-kw.intoto.jsonl
+      upload-assets: false
+
   publish:
     name: Publish verified crate
-    needs: verify
+    needs: [verify, provenance]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -129,6 +148,25 @@ jobs:
         with:
           name: release-package
           path: ${{ runner.temp }}/arx-kw-release
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ needs.provenance.outputs.provenance-name }}
+          path: ${{ runner.temp }}/arx-kw-provenance
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.25.x'
+          cache: false
+      - name: Verify signed provenance before obtaining registry credentials
+        env:
+          GOBIN: ${{ runner.temp }}/slsa-tools
+        run: |
+          go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
+          "$GOBIN/slsa-verifier" verify-artifact \
+            "$RUNNER_TEMP/arx-kw-release/arx-kw-${{ needs.verify.outputs.version }}.crate" \
+            --provenance-path "$RUNNER_TEMP/arx-kw-provenance/arx-kw.intoto.jsonl" \
+            --source-uri "github.com/$GITHUB_REPOSITORY" \
+            --source-tag "$RELEASE_TAG" \
+            --builder-id 'https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0'
       - name: Reproduce the verified package before obtaining credentials
         run: |
           cp "$RUNNER_TEMP/arx-kw-release/Cargo.lock" Cargo.lock
@@ -150,7 +188,7 @@ jobs:
 
   github-release:
     name: Create GitHub release after registry publication
-    needs: [verify, publish]
+    needs: [verify, provenance, publish]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -159,6 +197,10 @@ jobs:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: release-package
+          path: ${{ runner.temp }}/arx-kw-release
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ needs.provenance.outputs.provenance-name }}
           path: ${{ runner.temp }}/arx-kw-release
       - name: Create release and attach verified archive
         env:
@@ -171,8 +213,8 @@ jobs:
           extra=()
           if [ "$PRERELEASE" = true ]; then extra+=(--prerelease); fi
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" ./*.crate SHA256SUMS --clobber
+            gh release upload "$RELEASE_TAG" ./*.crate SHA256SUMS arx-kw.intoto.jsonl --clobber
           else
-            gh release create "$RELEASE_TAG" ./*.crate SHA256SUMS --verify-tag \
+            gh release create "$RELEASE_TAG" ./*.crate SHA256SUMS arx-kw.intoto.jsonl --verify-tag \
               --title "ARX-KW $RELEASE_TAG" --notes-file release-notes.md "${extra[@]}"
           fi
