@@ -48,6 +48,8 @@ owned storage cannot guarantee erasure of compiler-created copies, CPU
 registers, provider-internal scratch, swap, or crash dumps. Constant-time tag
 comparison does not establish whole-program constant-time behavior.
 
+Report vulnerabilities privately using [SECURITY.md](https://github.com/mcaveniathor/arx-kw/blob/main/SECURITY.md).
+
 ## Installation
 
 Requires Rust 1.88 or later (including benchmark dependencies).
@@ -200,6 +202,10 @@ cargo bench
 
 The unit tests include the paper's vectors for all four variants, plus
 malformed-input, authentication, boundary, and stream-counter regressions.
+Frozen envelope v1 vectors preserve compatibility with the published 0.4.0 crate.
+Property tests generate keys, messages, contexts, and mutations; failures are
+shrunk and saved by Proptest for reproduction. Instrumented fuzz targets and
+local commands are documented in [fuzz/README.md](https://github.com/mcaveniathor/arx-kw/blob/main/fuzz/README.md).
 Documentation examples run as doctests. Benchmarks use Criterion; use
 `cargo bench --bench gx` for one variant. No service or credentials are needed.
 `Cargo.lock` is intentionally ignored for this library; after initial resolution,

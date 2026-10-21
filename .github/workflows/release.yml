@@ -65,6 +65,7 @@ jobs:
         run: |
           cargo generate-lockfile
           cargo fmt --check
+          cargo fmt --manifest-path fuzz/Cargo.toml --check
           cargo fmt --manifest-path site/Cargo.toml --check
           cargo clippy --all-targets --all-features --locked -- -D warnings
           cargo clippy --all-targets --no-default-features --locked -- -D warnings

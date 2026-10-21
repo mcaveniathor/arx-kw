@@ -2,6 +2,12 @@
 
 ## 0.5.0 (2026-10-21)
 
+- Freeze sixteen envelope v1 vectors from the published 0.4.0 crate; test
+  generated keys, contexts, malformed inputs, and size boundaries with Proptest.
+- Add seeded, instrumented fuzz targets and bounded CI smoke runs. Test and
+  fuzz dependencies remain outside the runtime dependency graph.
+- Document private vulnerability reporting and version support in SECURITY.md.
+
 - Add runnable key-wrapping, wrapping-key rotation, and detached-tag examples
   with OS-generated keys and drop-time secret erasure.
 - Make `chacha20` and `arrayref` optional per variant, and enable XChaCha support

@@ -11,7 +11,7 @@ description = "An implementation of the ARX-KW-8-2-4 Key Wrap constructions"
 repository = "https://github.com/mcaveniathor/arx-kw"
 readme = "README.md"
 documentation = "https://docs.rs/arx-kw"
-exclude = ["site/**", "dev/**", ".github/**"]
+exclude = ["site/**", "dev/**", ".github/**", "fuzz/**"]
 
 [features]
 e = ["dep:chacha20", "dep:arrayref"]
@@ -34,6 +34,7 @@ thiserror = "2.0.21"
 subtle = "2.6.1"
 
 [dev-dependencies]
+proptest = { version = "1.12.0", default-features = false, features = ["std"] }
 getrandom = { version = "0.4.3", features = ["std"] }
 hkdf = "0.13.0"
 # Independent compatibility oracles; never linked into the published library.
