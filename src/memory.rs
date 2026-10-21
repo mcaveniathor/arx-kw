@@ -1,4 +1,4 @@
-use crate::{ArxKwError, InvalidLengthError};
+use crate::ArxKwError;
 use std::{
     fmt,
     ops::{Deref, DerefMut},
@@ -62,9 +62,10 @@ impl<const N: usize> fmt::Debug for SecretKey<N> {
     }
 }
 
+#[cfg(any(feature = "envelope", feature = "ex", feature = "gx"))]
 pub fn check_length(length: usize, maximum: usize) -> Result<(), ArxKwError> {
     if length > maximum {
-        return Err(InvalidLengthError::UpTo(length, maximum).into());
+        return Err(crate::InvalidLengthError::UpTo(length, maximum).into());
     }
     Ok(())
 }

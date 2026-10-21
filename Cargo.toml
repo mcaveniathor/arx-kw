@@ -14,25 +14,27 @@ documentation = "https://docs.rs/arx-kw"
 exclude = ["site/**", "dev/**", ".github/**"]
 
 [features]
-e = []
-g = []
-gx = []
-ex = []
-default = ["e", "g", "gx", "ex"]
+e = ["dep:chacha20", "dep:arrayref"]
+g = ["dep:chacha20", "dep:arrayref"]
+gx = ["dep:chacha20", "dep:arrayref", "chacha20/xchacha"]
+ex = ["dep:chacha20", "dep:arrayref", "chacha20/xchacha"]
+envelope = ["dep:hmac", "dep:sha2"]
+default = ["e", "g", "gx", "ex", "envelope"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chacha20 = { version = "0.10.2", features = ["zeroize", "xchacha"] }
+chacha20 = { version = "0.10.2", features = ["zeroize"], optional = true }
 zeroize = { version = "1.9.1", features = ["derive"] }
 # Enable zeroization for the context KDF's HMAC state as well as SHA-256.
-hmac = { version = "0.13.0", features = ["zeroize"] }
-sha2 = { version = "0.11.1", features = ["zeroize"] }
-arrayref = "0.3.9"
+hmac = { version = "0.13.0", features = ["zeroize"], optional = true }
+sha2 = { version = "0.11.1", features = ["zeroize"], optional = true }
+arrayref = { version = "0.3.9", optional = true }
 thiserror = "2.0.21"
 subtle = "2.6.1"
 
 [dev-dependencies]
+getrandom = { version = "0.4.3", features = ["std"] }
 hkdf = "0.13.0"
 # Independent compatibility oracles; never linked into the published library.
 chacha = "0.4.0"
@@ -40,6 +42,18 @@ siphasher = "1.0.4"
 hex = "0.4.3"
 anyhow = "1.0.104"
 criterion = "0.8.2"
+
+[[example]]
+name = "wrap_key"
+required-features = ["gx", "envelope"]
+
+[[example]]
+name = "rotate_key"
+required-features = ["gx", "envelope"]
+
+[[example]]
+name = "detached_tag"
+required-features = ["g"]
 
 
 # Benches run with Criterion

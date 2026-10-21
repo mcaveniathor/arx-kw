@@ -7,14 +7,17 @@
 #![doc = include_str!("../README.md")]
 
 #[macro_use]
+#[cfg(any(feature = "e", feature = "g", feature = "ex", feature = "gx"))]
 extern crate arrayref;
 extern crate thiserror;
 use thiserror::Error;
 pub use zeroize::{Zeroize, Zeroizing};
+#[cfg(feature = "envelope")]
 mod envelope;
 mod memory;
 #[cfg(any(feature = "e", feature = "g", feature = "ex", feature = "gx"))]
 mod sip;
+#[cfg(feature = "envelope")]
 pub use envelope::{ENVELOPE_HEADER_LENGTH, MAX_CONTEXT_LENGTH};
 pub use memory::{SecretBytes, SecretKey, MAX_INPUT_LENGTH};
 #[cfg(any(feature = "g", feature = "gx"))]
@@ -131,11 +134,13 @@ pub trait ArxKW {
     const MAX_INPUT_LENGTH: usize = MAX_INPUT_LENGTH;
 
     /// Wraps key material into a versioned envelope bound to an application context.
+    /// Available with the `envelope` feature (enabled by default).
     ///
     /// Use a stable, application-specific context such as `b"example.com/storage/v1"`.
     /// The context is not stored; supply exactly the same bytes during decryption.
     /// # Errors
     /// Returns an error for oversized inputs/context, allocation failure, or encryption failure.
+    #[cfg(feature = "envelope")]
     fn encrypt_envelope(
         key: &Self::Key,
         plaintext: &[u8],
@@ -145,9 +150,11 @@ pub trait ArxKW {
     }
 
     /// Opens a versioned envelope into plaintext that zeroizes when dropped.
+    /// Available with the `envelope` feature (enabled by default).
     /// # Errors
     /// Rejects invalid headers, wrong variants, oversized input/context, allocation
     /// failure, and authentication failure (including a changed context).
+    #[cfg(feature = "envelope")]
     fn decrypt_envelope(
         key: &Self::Key,
         input: &[u8],
@@ -273,7 +280,9 @@ pub trait ArxKW {
         if blob.len() < 16 {
             return Err(ArxKwError::InvalidBlobLength(blob.len()));
         }
-        let authentication_tag = AuthTag(*array_ref![blob, 0, 16]);
+        let mut tag = [0; 16];
+        tag.copy_from_slice(&blob[..16]);
+        let authentication_tag = AuthTag(tag);
         let ciphertext = &blob[16..];
         Self::decrypt(key, ciphertext, &authentication_tag)
     }
