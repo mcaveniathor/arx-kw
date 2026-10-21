@@ -98,7 +98,8 @@ Pushing the tag starts `.github/workflows/release.yml`:
 
 - **Verify:** check tag/version equality, main ancestry, successful CI, clean source, tests,
   MSRV, linting, site links, and both dependency audits. Run a registry publish
-  dry run; verify the archive's version and clean VCS commit; record SHA-256
+  dry run, then explicitly retain the archive with `cargo package`; verify its
+  version and clean VCS commit; record SHA-256
   and changelog release notes.
 - **Publish:** download the verified archive and lockfile, rebuild the package,
   and compare it byte for byte before obtaining registry credentials. Then
