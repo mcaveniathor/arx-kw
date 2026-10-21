@@ -38,7 +38,6 @@ benchmarks; historical timings are not presented as current release results.
 | Implementation review | `CODE_REVIEW.md` |
 | Release guide | `RELEASE.md` |
 | Website development | This file |
-cargo clean --doc
 | API reference | `cargo doc --all-features --no-deps` |
 
 Update these Markdown files rather than editing generated HTML. Rustdoc-hidden
