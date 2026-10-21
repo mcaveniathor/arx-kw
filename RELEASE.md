@@ -1,7 +1,7 @@
 # Releasing ARX-KW
 
-Version 0.4.0 is a breaking release from 0.3.2. Review the changelog, README
-migration section, and implementation review before tagging it. Release
+Version 0.4.0 is published. For the next release, review the changelog, README
+migration section, and implementation review before tagging. Release
 preparation does not publish a crate or push a tag.
 
 ## One-time repository setup
@@ -57,8 +57,14 @@ cargo test --all-features --locked
 cargo +1.88.0 test --all-features --locked
 for feature in e g ex gx; do
   cargo test --no-default-features --features "$feature" --locked || exit $?
+  cargo test --no-default-features --features "$feature,envelope" --locked || exit $?
 done
 cargo test --no-default-features --locked
+cargo test --no-default-features --features envelope --locked
+python dev/check-features.py
+cargo run --example wrap_key --no-default-features --features gx,envelope --locked
+cargo run --example rotate_key --no-default-features --features gx,envelope --locked
+cargo run --example detached_tag --no-default-features --features g --locked
 cargo bench --all-features --locked -- --test
 python -B -m unittest discover -s dev/tests -v
 cargo run --manifest-path site/Cargo.toml --locked -- target/pages --base /arx-kw/
@@ -83,6 +89,10 @@ an environment approval. CI continues to test current stable Rust and the MSRV.
 
 ## Tag and publish
 
+The unreleased optional `envelope` feature changes explicitly reduced-feature
+builds. Release that change in a new breaking version (for example, 0.5.0),
+not as a 0.4.x patch. Published 0.4.0 and its tag remain immutable.
+
 1. Update `Cargo.toml`, changelog, release status in the README, and landing-page
    version label together. Finalize the release notes and any unreleased label.
 2. Merge the reviewed changes into `main` and wait for CI to pass. The release
@@ -93,8 +103,8 @@ an environment approval. CI continues to test current stable Rust and the MSRV.
    ```sh
    git switch main
    git pull --ff-only
-   git tag -a v0.4.0 -m 'Release 0.4.0'
-   git push origin v0.4.0
+   git tag -a v0.5.0 -m 'Release 0.5.0'
+   git push origin v0.5.0
    ```
 
 Pushing the tag starts `.github/workflows/release.yml`:

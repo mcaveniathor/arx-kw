@@ -72,8 +72,14 @@ jobs:
           cargo test --all-features --locked
           for feature in e g ex gx; do
             cargo test --no-default-features --features "$feature" --locked
+            cargo test --no-default-features --features "$feature,envelope" --locked
           done
           cargo test --no-default-features --locked
+          cargo test --no-default-features --features envelope --locked
+          python dev/check-features.py
+          cargo run --example wrap_key --no-default-features --features gx,envelope --locked
+          cargo run --example rotate_key --no-default-features --features gx,envelope --locked
+          cargo run --example detached_tag --no-default-features --features g --locked
           cargo bench --all-features --locked -- --test
           python -B -m unittest discover -s dev/tests -v
           python dev/install-actionlint.py "$RUNNER_TEMP/actionlint"

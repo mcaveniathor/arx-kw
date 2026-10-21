@@ -1,5 +1,10 @@
-#![cfg(any(feature = "e", feature = "g", feature = "ex", feature = "gx"))]
-use arx_kw::{ArxKW, ArxKwError, ENVELOPE_HEADER_LENGTH, MAX_CONTEXT_LENGTH, MAX_INPUT_LENGTH};
+#![cfg(all(
+    feature = "envelope",
+    any(feature = "e", feature = "g", feature = "ex", feature = "gx")
+))]
+#[cfg(feature = "gx")]
+use arx_kw::MAX_INPUT_LENGTH;
+use arx_kw::{ArxKW, ArxKwError, ENVELOPE_HEADER_LENGTH, MAX_CONTEXT_LENGTH};
 
 #[cfg(any(feature = "e", feature = "g", feature = "ex", feature = "gx"))]
 fn check<V: ArxKW>(key: &V::Key) {

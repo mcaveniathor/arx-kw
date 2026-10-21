@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- Add runnable key-wrapping, wrapping-key rotation, and detached-tag examples
+  with OS-generated keys and drop-time secret erasure.
+- Make `chacha20` and `arrayref` optional per variant, and enable XChaCha support
+  only for EX/GX. Gate `hmac` and `sha2` behind default-enabled `envelope`.
+- **Breaking for reduced-feature builds:** callers using envelope methods or
+  constants with `default-features = false` must now enable `envelope` explicitly.
+  Default builds and wire formats remain compatible. Publish this change in a
+  new breaking version rather than as a 0.4.x patch.
+- Check raw and envelope feature combinations, dependency graphs, and runnable
+  examples in CI and release verification.
+
 ## 0.4.0 (2026-10-21)
 
 - Update every direct runtime and development dependency to the latest stable

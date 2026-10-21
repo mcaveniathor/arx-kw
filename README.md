@@ -28,7 +28,7 @@ they require applications to manage protocol separation themselves.
 | `ex` / `EX` | 48 bytes | 1 MiB | XChaCha8 |
 | `gx` / `GX` | 32 bytes | 1 MiB | XChaCha8 |
 
-All four features are enabled by default. EX/GX enforce a one-MiB input limit
+All four variant features and `envelope` are enabled by default. EX/GX enforce a one-MiB input limit
 before hashing, key derivation, or output allocation. Output allocations use fallible reservation and return
 `AllocationFailed` on failure. E/G bounds exclude the authentication tag.
 Empty plaintexts are accepted. Every authentication tag is 16 bytes; blobs are `tag || ciphertext`,
@@ -63,6 +63,37 @@ To enable only GX:
 [dependencies]
 arx-kw = { version = "0.4", default-features = false, features = ["gx"] }
 ```
+
+## Optional dependencies (development checkout)
+
+The following feature split is unreleased; published 0.4.0 includes the context
+KDF unconditionally. Default builds keep the same API and byte formats.
+
+| Feature | Optional runtime dependencies / capabilities |
+| --- | --- |
+| `e`, `g` | `chacha20` and `arrayref`; ChaCha8 only |
+| `ex`, `gx` | `chacha20` and `arrayref`, including XChaCha support |
+| `envelope` | `hmac` and `sha2`; context-bound envelope methods and constants |
+
+For a minimal raw GX build, disable default features and enable only `gx`.
+For context-bound wrapping from this checkout, enable both features:
+
+```toml
+[dependencies]
+arx-kw = { path = "../arx-kw", default-features = false, features = ["gx", "envelope"] }
+```
+
+**Migration for reduced-feature builds:** unlike 0.4.0, enabling a variant alone
+no longer provides `encrypt_envelope`, `decrypt_envelope`,
+`ENVELOPE_HEADER_LENGTH`, or `MAX_CONTEXT_LENGTH`. Add `envelope` when using
+those APIs. This feature-selection change requires a breaking release before
+publication. The default feature set keeps those APIs available.
+
+Without any features, the crate provides shared types and the `ArxKW` trait,
+with no built-in cipher variant. `zeroize`, `subtle`, and `thiserror` remain
+required by those public types, constant-time comparison, and error handling.
+Example randomness uses a development-only `getrandom` dependency; it does not
+add a runtime dependency for library consumers.
 
 ## Example
 
@@ -99,12 +130,12 @@ Treat every decryption error as a failure; do not use unauthenticated data.
 
 ## Versioned envelopes and secret ownership
 
-For new applications, use a stable, protocol-specific context and the envelope
-methods. The fixed key in this example is a test fixture; applications must
+For new applications, enable `envelope` and use a stable, protocol-specific
+context with the envelope methods. The fixed key in this example is a test fixture; applications must
 supply cryptographically random wrapping keys.
 
 ```rust
-# #[cfg(feature = "gx")]
+# #[cfg(all(feature = "gx", feature = "envelope"))]
 # fn main() -> Result<(), arx_kw::ArxKwError> {
 use arx_kw::{gx::GX, ArxKW, SecretKey};
 let key = SecretKey::new([0x42; 32]); // Test fixture only.
@@ -115,7 +146,7 @@ assert_eq!(plaintext.as_ref(), b"example key material");
 // `key` and `plaintext` are wiped when they leave scope.
 # Ok(())
 # }
-# #[cfg(not(feature = "gx"))] fn main() {}
+# #[cfg(not(all(feature = "gx", feature = "envelope")))] fn main() {}
 ```
 
 Envelope v1 is `ARXK || 01 || variant || 0000 || tag || ciphertext`:
@@ -131,12 +162,38 @@ or reserved flags fail closed; the API never falls back to legacy decryption.
 Use one format explicitly at each storage boundary. Determinism still reveals
 repeated inputs within the same key and context.
 
+## Runnable programs
+
+Run these examples from the development checkout. Each uses OS randomness,
+checks recovery and rejection cases, and prints only sizes or status messages.
+They do not persist keys or write secret material to disk.
+
+| Program | Use case | Required features |
+| --- | --- | --- |
+| `wrap_key` | Bind a generated data key to a tenant context | `gx,envelope` |
+| `rotate_key` | Rewrap a data key under a new wrapping key | `gx,envelope` |
+| `detached_tag` | Store ciphertext and authentication tag separately | `g` |
+
+```sh
+cargo run --example wrap_key --no-default-features --features gx,envelope
+cargo run --example rotate_key --no-default-features --features gx,envelope
+cargo run --example detached_tag --no-default-features --features g
+```
+
+The programs demonstrate the wrapping step, not complete key-management
+systems. Production applications must protect and retain wrapping keys, choose
+stable contexts, and commit rotations transactionally. Detached storage needs
+a dedicated key for protocol separation because it has no context field.
+See the [example source programs](https://github.com/mcaveniathor/arx-kw/tree/main/examples).
+
 ## Development
 
 ```sh
 cargo build
 cargo test
 cargo test --no-default-features --features gx
+cargo test --no-default-features --features gx,envelope
+python dev/check-features.py
 cargo doc --no-deps
 cargo bench
 ```
